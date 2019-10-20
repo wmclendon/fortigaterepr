@@ -1,0 +1,517 @@
+import pandas as pd
+import ipaddress
+import logging
+
+
+# TODO:  Should each class have an attribute for storing the original raw output when its created, that way if it
+# ever needs to be used to feed back into a FortigateDevice it can have the exact same format, structure, etc apart
+# from the clean_data() operation.
+# Believe this would require a new __init__() method to set a self.raw variable.  not sure how to do this as extension
+# to a Pandas DataFrame -- need to call super() first I think.  or could potentially as a first step of clean_data()
+# where it checks if self.raw is None, and if yes, copy over the data first, then initiate cleanup.  I think it needs
+# to be done as part of an __init__ though because then can have __init__(self, raw_data) as the constructor, and then
+# have self.raw = raw_data for storing it as it came in -- would not be a dataframe though, but could save it as one.
+
+
+class FortigateManagedAps(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    # TODO:  Add helper methods to get specific details of APs, like wired interface stats, SSID or Radio info, etc.
+    base_drop_columns = [
+        "region_code",
+        "mgmt_vlanid",
+        "mesh_uplink",
+        "mesh_hop_count",
+        "mesh_uplink_intf",
+        "join_time_raw",
+        "reboot_last_day",
+        "image_download_progress",
+        "override_profile",
+        "wired",
+        "country_code_conflict",
+        "cli_enabled",
+        "wtp_mode",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        pass
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+
+        return self
+
+
+class FortigateWlanConnectedClients(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    base_drop_columns = [
+        "captive_portal_authenticated",
+        "data_rate",
+        "lan_authenticated",
+        "host",
+        "security",
+        "encrypt",
+        "signal_bar",
+        "mac",
+        "vlan_id",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        pass
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+
+        return self
+
+
+class FortigateWlanRogueAps(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    base_drop_columns = [
+        "is_wired",
+        "capinfo",
+        "rate",
+        "is_fake",
+        "signal_strength",
+        "noise",
+        "rate",
+        "first_seen",
+        "last_seen",
+        "sta_mac",
+        "wtp_count",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        if "manufacturer" in self:
+            self["manufacturer"].fillna("Unknown", inplace=True)
+        if "encryption" in self:
+            self["encryption"].fillna("None / Unknown", inplace=True)
+        if "ssid" in self:
+            self["ssid"].fillna("None / Unknown", inplace=True)
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+
+        return self
+
+
+class FortigateArpTable(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    base_drop_columns = []
+    # template = None
+    # with open("templates/fortios_get_system_arp.template", encoding="utf-8") as t:
+    #     template = textfsm.TextFSM(t)
+    # COLUMNS = ["Address", "Age(min)", "MAC Address", "Interface"]
+
+    # def __init__(self, data):
+    #     # data provided as a list of the lines from the SSH Command, need to convert back to string so that TextFSM can parse
+    #     d = str(data)
+    #     super().__init__(self, d)
+    #     self.columns = COLUMNS
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        pass
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+        return self
+
+
+class FortigateInterfaceDetails(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+    """
+
+    base_drop_columns = [
+        "real_interface_name",
+        "is_system_interface",
+        "dynamic_addressing",
+        "dhcp4_client_count",
+        "dhcp6_client_count",
+        "role",
+        "estimated_upstream_bandwidth",
+        "estimated_downstream_bandwidth",
+        "is_ipsecable",
+        "supports_device_id",
+        "device_id_enabled",
+        "valid_in_policy",
+        "supports_fortitelemetry",
+        "fortitelemetry",
+        "compliance_enforced",
+        "is_ipsec_static",
+        "managed_devices",
+        "is_used",
+        "is_hardware_switch",
+        "members",
+        "is_zone_member",
+        "is_routable",
+        "tagging",
+        "type",
+        "is_physical",
+        "used_by_composite",
+        "is_hardware_switch_member",
+        "hardware_switch",
+        "icon",
+        "load_balance_mode",
+        "sd_wan_settings",
+        "is_sslvpn",
+        "is_tunnel",
+        "is_zone",
+        "is_virtual_wan_link",
+        "is_modem",
+        "is_modem_hidden",
+        "is_wifi",
+        "ssid",
+        "is_local_bridge",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        self["vdom"].fillna("N/A", inplace=True)
+        self["status"].fillna("N/A", inplace=True)
+        self["mac_address"].fillna("N/A", inplace=True)
+        self["alias"].fillna("None", inplace=True)
+        self["zone"].fillna("N/A", inplace=True)
+        self["ipv4_addresses"].fillna("None", inplace=True)
+        self["link"].fillna("N/A", inplace=True)
+        self["speed"].fillna("N/A", inplace=True)
+        self["media"].fillna("N/A", inplace=True)
+        self["description"].fillna("None", inplace=True)
+        self["duplex"].fillna("N/A", inplace=True)
+
+        # for now going to convert the IP representation to CIDR notation.
+        # also presumes no multi-netting at this time...
+        for idx, item in self.iterrows():
+            if isinstance(item["ipv4_addresses"], list):
+                ip_addr = str(
+                    ipaddress.ip_interface(
+                        f"{item['ipv4_addresses'][0]['ip']}/{item['ipv4_addresses'][0]['netmask']}"
+                    )
+                )
+                # ip_addr = f"{item['ipv4_addresses'][0]['ip']}/{item['ipv4_addresses'][0]['netmask']}"
+
+                self.at[idx, "ipv4_addresses"] = ip_addr
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                # return self
+        return self
+
+
+class ForitgateDetectedDevices(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+    """
+
+    base_drop_columns = [
+        "type",
+        "master_mac",
+        "category",
+        "hostname_source",
+        "os_source",
+        "is_master_device",
+        "other_macs",
+        "other_devices",
+        "interfaces",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        pass
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+        return self
+
+
+class FortigateActiveIpsecVpns(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+    """
+
+    base_drop_columns = ["proxyid", "wizard-type"]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        pass
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                # TODO:  in case of key error, should I return self (contains all columns stored) or
+                # TODO:  should I return self.get() which returns data with any base drop columns removed
+                # return self
+                # return self.get()
+        return self
+
+
+class FortigateRouteTable(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+    """
+
+    base_drop_columns = []
+
+    def clean_data(self):
+        """
+        method to clean / normalize data in the route table DataFrame
+        """
+        if "install_date" in self:
+            self["install_date"] = pd.to_datetime(
+                self["install_date"], errors="coerce", unit="s"
+            )
+        self["uptime"].fillna(0, inplace=True)
+        self["install_date"].fillna(0, inplace=True)
+        self["tunnel_parent"].fillna("N/A", inplace=True)
+        self["is_tunnel_route"].fillna("N/A", inplace=True)
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                # return self
+        return self
+
+
+class FortigateFirewallPolicy(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+    """
+
+    base_drop_columns = []
+    simple_view_columns = [
+        "policyid",
+        "name",
+        "srcintf",
+        "srcaddr",
+        "dstintf",
+        "dstaddr",
+        "service",
+        "action",
+        "application",
+        "comments",
+        "logtraffic",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        for idx, rule in self.iterrows():
+            new_values = rule["srcintf"]
+            for i, item in enumerate(new_values):
+                new_values[i] = item.get("name")
+            self.at[idx, "srcintf"] = new_values
+
+            new_values = rule["srcaddr"]
+            for i, item in enumerate(new_values):
+                new_values[i] = item.get("name")
+            self.at[idx, "srcaddr"] = new_values
+
+            new_values = rule["dstintf"]
+            for i, item in enumerate(new_values):
+                new_values[i] = item.get("name")
+            self.at[idx, "dstintf"] = new_values
+
+            new_values = rule["dstaddr"]
+            for i, item in enumerate(new_values):
+                new_values[i] = item.get("name")
+            self.at[idx, "dstaddr"] = new_values
+
+            new_values = rule["service"]
+            for i, item in enumerate(new_values):
+                new_values[i] = item.get("name")
+            self.at[idx, "service"] = new_values
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+
+        # if no exclude_columns specified, then we return the same as get_simple_output:
+        if exclude_columns is None:
+            return self[self.simple_view_columns]
+
+    def get_simple_output(self):
+        """
+        helper method to return simple table with small number of columns
+        """
+        try:
+            return self[self.simple_view_columns]
+        except KeyError as e:
+            logging.info(
+                f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+            )
+            return self
+
+
+class FortigateDhcpClientLeases(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    base_drop_columns = ["server_mkey"]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        if "expire_time" in self:
+            self["expire_time"] = pd.to_datetime(
+                self["expire_time"], errors="coerce", unit="s"
+            )
+        if "vci" in self:
+            self["vci"].fillna("N/A", inplace=True)
+        if "hostname" in self:
+            self["hostname"].fillna("None / Unknown", inplace=True)
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        """
+        if isinstance(exclude_columns, list):
+            try:
+                return self.drop(exclude_columns, axis=1)
+            except KeyError as e:
+                logging.info(
+                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
+                )
+                return self
+
+        return self

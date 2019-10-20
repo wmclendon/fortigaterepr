@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+black = "*"
+invoke = "*"
+bumpversion = "*"
+coverage = "*"
+wheel = "*"
+sphinx = "*"
+twine = "*"
+tox = "*"
+"flake8" = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+isort = "*"
+yapf = "*"
+
+[packages]
+fortigaterepr = {path = ".", editable = true}
+pandas = "*"
+fortiosapi = "*"
+textfsm = "*"
+
+[pipenv]
+allow_prereleases = true

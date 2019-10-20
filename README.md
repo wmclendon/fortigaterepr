@@ -18,7 +18,7 @@ dev = FortigateDevice(
     "192.0.2.50",
     username="username",
     password="password",
-    apitoken="secretapitoken,
+    apitoken="secretapitoken",
     verify=False,
 )
 

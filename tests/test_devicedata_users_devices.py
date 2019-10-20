@@ -1,19 +1,20 @@
-import pytest
+import base64
+import json
 import logging
 import os
 import tempfile
-import json
-import base64
-import requests
-import pandas as pd
 from unittest import mock
 
+import pandas as pd
+import pytest
+import requests
+
 from fortigaterepr.devicedata import (
+    ForitgateDetectedDevices,
     FortigateDhcpClientLeases,
     FortigateManagedAps,
     FortigateWlanConnectedClients,
     FortigateWlanRogueAps,
-    ForitgateDetectedDevices,
 )
 
 

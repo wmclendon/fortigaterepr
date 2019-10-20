@@ -1,19 +1,21 @@
-import pytest
+import base64
+import copy
+import json
 import logging
 import os
 import tempfile
-import json
-import base64
-import requests
-import pandas as pd
-import copy
 from unittest import mock
+
+import pandas as pd
+import pytest
+import requests
 
 from fortigaterepr.devicedata import (
     FortigateArpTable,
     FortigateInterfaceDetails,
     FortigateRouteTable,
 )
+
 from .example_data import INTERFACE_DETAILS_RESULT, ROUTE_TABLE_RESULT
 
 

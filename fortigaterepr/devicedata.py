@@ -1,7 +1,7 @@
-import pandas as pd
 import ipaddress
 import logging
 
+import pandas as pd
 
 # TODO:  Should each class have an attribute for storing the original raw output when its created, that way if it
 # ever needs to be used to feed back into a FortigateDevice it can have the exact same format, structure, etc apart
@@ -164,6 +164,7 @@ class FortigateArpTable(pd.DataFrame):
     """
 
     base_drop_columns = []
+
     # template = None
     # with open("templates/fortios_get_system_arp.template", encoding="utf-8") as t:
     #     template = textfsm.TextFSM(t)

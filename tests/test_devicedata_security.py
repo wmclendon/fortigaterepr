@@ -1,17 +1,19 @@
-import pytest
+import base64
+import copy
+import json
 import logging
 import os
 import tempfile
-import json
-import base64
-import requests
-import pandas as pd
-import numpy
-import copy
 from unittest import mock
 
+import numpy
+import pandas as pd
+import pytest
+import requests
+
 from fortigaterepr.devicedata import FortigateActiveIpsecVpns, FortigateFirewallPolicy
-from .example_data import FW_POLICY_RESULT, ACTIVE_VPN_RESULT
+
+from .example_data import ACTIVE_VPN_RESULT, FW_POLICY_RESULT
 
 
 class Test_TEMPLATE:

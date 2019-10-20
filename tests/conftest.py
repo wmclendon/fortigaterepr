@@ -1,20 +1,18 @@
-import pytest
-import tempfile
-import os
 import datetime
+import os
+import tempfile
 from pathlib import Path
 
+import pytest
 
 ## EXAMPLES BELOW FROM ANOTHER PROJECT:
 
 # TEST_CONF_FILNAME = "tests/test_vars.ini"
 
-
 # @pytest.fixture
 # def test_config_file():
 #     config_file = Path(TEST_CONF_FILNAME)
 #     return config_file
-
 
 # @pytest.fixture()
 # def config_vars():
@@ -22,7 +20,6 @@ from pathlib import Path
 #     """
 #     config_vars = e3_alert_helpers.verify_env_vars(TEST_CONF_FILNAME)
 #     return config_vars
-
 
 # @pytest.fixture()
 # def valid_token():
@@ -36,7 +33,6 @@ from pathlib import Path
 #     )
 #     return encoded_jwt
 
-
 # @pytest.fixture
 # def invalid_token():
 #     """returns an invalid JWT token
@@ -48,7 +44,6 @@ from pathlib import Path
 #         algorithm="HS256",
 #     )
 #     return encoded_jwt
-
 
 # @pytest.fixture
 # def credential_file():
@@ -64,7 +59,6 @@ from pathlib import Path
 #     finally:
 #         os.unlink(f.name)
 
-
 # @pytest.fixture
 # def base_alert():
 #     """fixture for an E3BaseAlert to be used in unit tests
@@ -77,7 +71,6 @@ from pathlib import Path
 #         customer_name="test customer",
 #     )
 #     return alert
-
 
 # @pytest.fixture
 # def base_alert_with_email_actions():

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Tests for `fortigaterepr` package."""
 
 import pytest
-
 
 from fortigaterepr import fortigaterepr
 

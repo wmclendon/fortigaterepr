@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 
+import logging
+from io import StringIO
+from typing import Optional
+
+import pandas as pd
+import textfsm
+import urllib3
 from fortiosapi import FortiOSAPI
 from fortiosapi.exceptions import InvalidLicense, NotLogged
+
 from fortigaterepr.devicedata import (
     ForitgateDetectedDevices,
     FortigateActiveIpsecVpns,
+    FortigateArpTable,
+    FortigateDhcpClientLeases,
     FortigateFirewallPolicy,
     FortigateInterfaceDetails,
     FortigateManagedAps,
     FortigateRouteTable,
     FortigateWlanConnectedClients,
     FortigateWlanRogueAps,
-    ForitgateDetectedDevices,
-    FortigateArpTable,
-    FortigateDhcpClientLeases,
 )
-import textfsm
-import logging
-import urllib3
-from io import StringIO
-from typing import Optional
-import pandas as pd
 
 ARP_TEXT_FSM = StringIO(
     """Value ADDRESS (\\d+\\.\\d+\\.\\d+\\.\\d+)

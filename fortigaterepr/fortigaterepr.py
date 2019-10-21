@@ -202,7 +202,6 @@ edit {vdom}
         else:
             command = commands
 
-
         try:
             r = self.devapi.ssh(command, self.host, self.username, self.password)
             return r

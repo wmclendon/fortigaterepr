@@ -321,11 +321,15 @@ class FortigateDevice:
         self.detected_devices = data
         return self.detected_devices
 
-    def get_interfaces(self, exclude_columns=None):
+    def get_interfaces(self, exclude_columns=None, vdom=None):
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.interfaces is None:
-            result = self.devapi.monitor("system/available-interfaces", "select")
+            result = self.devapi.monitor(
+                "system/available-interfaces", "select", vdom=vdom
+            )
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."

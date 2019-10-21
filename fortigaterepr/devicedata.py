@@ -131,12 +131,25 @@ class FortigateWlanRogueAps(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        if "manufacturer" in self:
-            self["manufacturer"].fillna("Unknown", inplace=True)
-        if "encryption" in self:
-            self["encryption"].fillna("None / Unknown", inplace=True)
-        if "ssid" in self:
-            self["ssid"].fillna("None / Unknown", inplace=True)
+
+        clean_columns = [
+            ("manufacturer", "Unknown"),
+            ("encryption", "None / Unknown"),
+            ("ssid", "None / Unknown"),
+        ]
+
+        for c in clean_columns:
+            try:
+                self[c[0]].fillna(c[1], inplace=True)
+            except KeyError:
+                logging.info(f"Column {c[0]} not found in data, skipping.")
+
+        # if "manufacturer" in self:
+        #     self["manufacturer"].fillna("Unknown", inplace=True)
+        # if "encryption" in self:
+        #     self["encryption"].fillna("None / Unknown", inplace=True)
+        # if "ssid" in self:
+        #     self["ssid"].fillna("None / Unknown", inplace=True)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -250,17 +263,45 @@ class FortigateInterfaceDetails(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        self["vdom"].fillna("N/A", inplace=True)
-        self["status"].fillna("N/A", inplace=True)
-        self["mac_address"].fillna("N/A", inplace=True)
-        self["alias"].fillna("None", inplace=True)
-        self["zone"].fillna("N/A", inplace=True)
-        self["ipv4_addresses"].fillna("None", inplace=True)
-        self["link"].fillna("N/A", inplace=True)
-        self["speed"].fillna("N/A", inplace=True)
-        self["media"].fillna("N/A", inplace=True)
-        self["description"].fillna("None", inplace=True)
-        self["duplex"].fillna("N/A", inplace=True)
+        clean_columns = [
+            ("vdom", "N/A"),
+            ("status", "N/A"),
+            ("mac_address", "N/A"),
+            ("alias", "N/A"),
+            ("zone", "N/A"),
+            ("ipv4_addresses", "None"),
+            ("link", "N/A"),
+            ("speed", "N/A"),
+            ("media", "N/A"),
+            ("Description", "None"),
+            ("duplex", "N/A"),
+        ]
+
+        for c in clean_columns:
+            try:
+                self[c[0]].fillna(c[1], inplace=True)
+            except KeyError:
+                logging.info(f"Column {c[0]} not found in data, skipping.")
+
+        # TODO:  Iterate over list of tuples containing column names and fillna values!
+        # try:
+        #     self["vdom"].fillna("N/A", inplace=True)
+        # except KeyError:
+        #     logging.info("Key not found!")
+        # self["status"].fillna("N/A", inplace=True)
+        # self["mac_address"].fillna("N/A", inplace=True)
+        # self["alias"].fillna("None", inplace=True)
+        # self["zone"].fillna("N/A", inplace=True)
+        # self["ipv4_addresses"].fillna("None", inplace=True)
+        # self["link"].fillna("N/A", inplace=True)
+        # self["speed"].fillna("N/A", inplace=True)
+        # self["media"].fillna("N/A", inplace=True)
+        # try:
+        #     self["description"].fillna("None", inplace=True)
+        # except KeyError:
+        #     logging.info("Key not found!")
+
+        # self["duplex"].fillna("N/A", inplace=True)
 
         # for now going to convert the IP representation to CIDR notation.
         # also presumes no multi-netting at this time...
@@ -373,14 +414,29 @@ class FortigateRouteTable(pd.DataFrame):
         """
         method to clean / normalize data in the route table DataFrame
         """
+        clean_columns = [
+            ("uptime", 0),
+            ("install_date", 0),
+            ("tunnel_parent", "N/A"),
+            ("is_tunnel_route", "N/A"),
+        ]
+
+        for c in clean_columns:
+            try:
+                self[c[0]].fillna(c[1], inplace=True)
+            except KeyError:
+                logging.info(f"Column {c[0]} not found in data, skipping.")
+
+        # this column, if present, requires special processing, so outside the for loop above
         if "install_date" in self:
             self["install_date"] = pd.to_datetime(
                 self["install_date"], errors="coerce", unit="s"
             )
-        self["uptime"].fillna(0, inplace=True)
-        self["install_date"].fillna(0, inplace=True)
-        self["tunnel_parent"].fillna("N/A", inplace=True)
-        self["is_tunnel_route"].fillna("N/A", inplace=True)
+
+        # self["uptime"].fillna(0, inplace=True)
+        # self["install_date"].fillna(0, inplace=True)
+        # self["tunnel_parent"].fillna("N/A", inplace=True)
+        # self["is_tunnel_route"].fillna("N/A", inplace=True)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -493,14 +549,26 @@ class FortigateDhcpClientLeases(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
+        clean_columns = [
+            ("vci", "N/A"),
+            ("hostname", "None / Unknown"),
+        ]
+
+        for c in clean_columns:
+            try:
+                self[c[0]].fillna(c[1], inplace=True)
+            except KeyError:
+                logging.info(f"Column {c[0]} not found in data, skipping.")
+
         if "expire_time" in self:
             self["expire_time"] = pd.to_datetime(
                 self["expire_time"], errors="coerce", unit="s"
             )
-        if "vci" in self:
-            self["vci"].fillna("N/A", inplace=True)
-        if "hostname" in self:
-            self["hostname"].fillna("None / Unknown", inplace=True)
+
+        # if "vci" in self:
+        #     self["vci"].fillna("N/A", inplace=True)
+        # if "hostname" in self:
+        #     self["hostname"].fillna("None / Unknown", inplace=True)
 
     def get(self, exclude_columns=base_drop_columns):
         """

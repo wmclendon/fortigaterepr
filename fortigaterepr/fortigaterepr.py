@@ -185,18 +185,32 @@ class FortigateDevice:
                 FORTIGATEREPR_LOGGER.warning("Error logging into device with API.")
                 return False
 
-    def ssh(self, commands):
+    def ssh(self, commands, vdom=None):
         """
         wrapper method for fortiosapi ssh method.  Returns False if an error occurred.
         """
+        # if VDOM is specified, prepending the config vdom / edit vdom commands so user does not have to
+        if vdom is None:
+            vdom = self.vdom
+
+        if self.vdom is not None:
+            command = f"""
+config vdom
+edit {vdom}
+{commands}
+            """
+        else:
+            command = commands
+
+
         try:
-            r = self.devapi.ssh(commands, self.host, self.username, self.password)
+            r = self.devapi.ssh(command, self.host, self.username, self.password)
             return r
         except Exception as e:
             FORTIGATEREPR_LOGGER.error(f"UNKNOWN EXCEPTION: {str(e)}")
             return False
 
-    def get_facts(self, exclude_columns=None):
+    def get_facts(self, exclude_columns=None, vdom=None):
         """
         get device facts
 
@@ -213,6 +227,8 @@ class FortigateDevice:
         """
         # TODO: Set each self.facts[VARIABLE]
         # NOTE:  Some facts can get set during the API login
+        if vdom is None:
+            vdom = self.vdom
 
         self.facts["vendor"] = "Fortinet"
         self.facts["model"] = "Fortigate Model TBD"
@@ -228,11 +244,11 @@ class FortigateDevice:
         self.rest_check_session()
 
         if self.interfaces is None:
-            self.get_interfaces()
+            self.get_interfaces(vdom=self.vdom)
 
         self.facts["interface_list"] = self.interfaces["name"].tolist()
 
-        basic_facts = self.devapi.monitor("system/status", "select")
+        basic_facts = self.devapi.monitor("system/status", "select", vdom=vdom)
         if not self.rest_monitor_check_resp(basic_facts):
             FORTIGATEREPR_LOGGER.warning("Response encountered error, returning None.")
             return None
@@ -246,12 +262,25 @@ class FortigateDevice:
         # self.facts = pd.DataFrame.from_dict(self.facts, orient='index')
         return self.facts
 
-    def get_arp_table(self, exclude_columns=None):
+    def get_arp_table(self, exclude_columns=None, vdom=None):
         """
         gets ARP table from device -- currently only available via SSH command, then parses it using TextFSM
         """
+        ## NOTE:  DOES THIS NEED VDOM SUPPORT???
+        if vdom is None:
+            vdom = self.vdom
+
+        base_arp_command = "get system arp"
+        if self.vdom is not None:
+            command = f"""
+config vdom
+edit {vdom}
+{base_arp_command}
+            """
+        else:
+            command = base_arp_command
         # get arp table via SSH:
-        command = "get system arp"
+        # command = "get system arp"
         arp_table = self.devapi.ssh(command, self.host, self.username, self.password)
         # successful response is a tuple where 0 position is the result, and 1 position is stderr response from paramiko
         # 0 position success is a list of strings, first line is prompt + header of cmd output, next lines are output itself,
@@ -271,9 +300,11 @@ class FortigateDevice:
         self.arp_table = data
         return self.arp_table
 
-    def get_active_ipsec_vpns(self, exclude_columns=None):
+    def get_active_ipsec_vpns(self, exclude_columns=None, vdom=None):
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
-        vpn_info = self.devapi.monitor("vpn/ipsec", "select")
+        vpn_info = self.devapi.monitor("vpn/ipsec", "select", vdom=vdom)
         if not self.rest_monitor_check_resp(vpn_info):
             FORTIGATEREPR_LOGGER.error("Response encountered error, returning None.")
             return None
@@ -284,12 +315,14 @@ class FortigateDevice:
         self.active_ipsec_vpns = data
         return self.active_ipsec_vpns
 
-    def get_route_table(self, exclude_columns=None):
+    def get_route_table(self, exclude_columns=None, vdom=None):
         """
         queries API and sets device object's route_table parameter and returns the value
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
-        route_table_info = self.devapi.monitor("router/ipv4", "select")
+        route_table_info = self.devapi.monitor("router/ipv4", "select", vdom=vdom)
         if not self.rest_monitor_check_resp(route_table_info):
             FORTIGATEREPR_LOGGER.error("Response encountered error, returning None.")
             return None
@@ -299,7 +332,7 @@ class FortigateDevice:
         self.route_table = data
 
         # get route table size info and store in Object (not returned):
-        route_table_size = self.devapi.monitor("router/statistics", "select")
+        route_table_size = self.devapi.monitor("router/statistics", "select", vdom=vdom)
         if not self.rest_monitor_check_resp(route_table_size):
             FORTIGATEREPR_LOGGER.error("Response encountered error, returning None.")
             return None
@@ -307,12 +340,13 @@ class FortigateDevice:
         self.route_table_size["total_routes"] = data.get("total_lines")
         self.route_table_size["ipv4_routes"] = data.get("total_lines_ipv4")
         self.route_table_size["ipv6_routes"] = data.get("total_lines_ipv6")
-
         return self.route_table
 
-    def get_detected_devices(self, exclude_columns=None):
+    def get_detected_devices(self, exclude_columns=None, vdom=None):
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
-        result = self.devapi.monitor("user/detected-device", "select")
+        result = self.devapi.monitor("user/detected-device", "select", vdom=vdom)
         if not self.rest_monitor_check_resp(result):
             FORTIGATEREPR_LOGGER.error("Response encountered error, returning None.")
             return None
@@ -340,14 +374,16 @@ class FortigateDevice:
             self.interfaces = data
         return self.interfaces
 
-    def get_fw_policy_ipv4(self):
+    def get_fw_policy_ipv4(self, vdom=None):
         """
         get Firewall's configured ipv4 security policy
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.fw_policy_ipv4 is None:
-            result = self.devapi.get("firewall", "policy")
+            result = self.devapi.get("firewall", "policy", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."
@@ -358,14 +394,16 @@ class FortigateDevice:
             self.fw_policy_ipv4 = data
         return self.fw_policy_ipv4
 
-    def get_fw_policy_ipv6(self):
+    def get_fw_policy_ipv6(self, vdom=None):
         """
         get Firewall's configured ipv6 security policy
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.fw_policy_ipv6 is None:
-            result = self.devapi.get("firewall6", "policy")
+            result = self.devapi.get("firewall6", "policy", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."
@@ -376,14 +414,16 @@ class FortigateDevice:
             self.fw_policy_ipv6 = data
         return self.fw_policy_ipv6
 
-    def get_managed_aps(self):
+    def get_managed_aps(self, vdom=None):
         """
         get Firewall's managed AP Details
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.managed_aps is None:
-            result = self.devapi.monitor("wifi/managed_ap", "select")
+            result = self.devapi.monitor("wifi/managed_ap", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."
@@ -394,14 +434,16 @@ class FortigateDevice:
             self.managed_aps = data
         return self.managed_aps
 
-    def get_wlan_connected_clients(self):
+    def get_wlan_connected_clients(self, vdom=None):
         """
         get Firewall's managed AP Details
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.wlan_connected_clients is None:
-            result = self.devapi.monitor("wifi/client", "select")
+            result = self.devapi.monitor("wifi/client", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."
@@ -412,14 +454,16 @@ class FortigateDevice:
             self.wlan_connected_clients = data
         return self.wlan_connected_clients
 
-    def get_wlan_rogue_aps(self):
+    def get_wlan_rogue_aps(self, vdom=None):
         """
         get Firewall's managed AP Details
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.wlan_rogue_aps is None:
-            result = self.devapi.monitor("wifi/rogue_ap", "select")
+            result = self.devapi.monitor("wifi/rogue_ap", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."
@@ -430,14 +474,16 @@ class FortigateDevice:
             self.wlan_rogue_aps = data
         return self.wlan_rogue_aps
 
-    def get_dhcp_client_leases(self) -> Optional[pd.DataFrame]:
+    def get_dhcp_client_leases(self, vdom=None) -> Optional[pd.DataFrame]:
         """
         get Firewall's managed AP Details
         """
+        if vdom is None:
+            vdom = self.vdom
         self.rest_check_session()
         # if interfaces not already populated from get_facts, then get the interface data:
         if self.dhcp_client_leases is None:
-            result = self.devapi.monitor("system/dhcp", "select")
+            result = self.devapi.monitor("system/dhcp", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
                 FORTIGATEREPR_LOGGER.error(
                     "Response encountered error, returning None."

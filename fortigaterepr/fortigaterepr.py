@@ -265,7 +265,6 @@ edit {vdom}
         """
         gets ARP table from device -- currently only available via SSH command, then parses it using TextFSM
         """
-        ## NOTE:  DOES THIS NEED VDOM SUPPORT???
         if vdom is None:
             vdom = self.vdom
 

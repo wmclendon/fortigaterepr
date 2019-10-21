@@ -549,10 +549,7 @@ class FortigateDhcpClientLeases(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        clean_columns = [
-            ("vci", "N/A"),
-            ("hostname", "None / Unknown"),
-        ]
+        clean_columns = [("vci", "N/A"), ("hostname", "None / Unknown")]
 
         for c in clean_columns:
             try:

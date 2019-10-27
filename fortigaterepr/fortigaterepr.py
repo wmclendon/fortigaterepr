@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import ipaddress
+
 from io import StringIO
 from typing import Optional
 
@@ -33,6 +35,15 @@ Start
   ^${ADDRESS}\\s+${AGE}\\s+${MAC}\\s+${INTERFACE} -> Record
 """
 )
+
+API_KEY_TEXT_FSM = StringIO(
+    """Value API_KEY (\\w+)
+
+Start
+  ^New API key: ${API_KEY} -> Record
+"""
+)
+
 
 # create logger:
 FORTIGATEREPR_LOGGER = logging.getLogger("fortigaterepr")
@@ -208,6 +219,89 @@ edit {vdom}
         except Exception as e:
             FORTIGATEREPR_LOGGER.error(f"UNKNOWN EXCEPTION: {str(e)}")
             return False
+
+    def create_api_user(
+        self,
+        api_username: str,
+        accprofile: str,
+        trusted_hosts_ipv4: list,
+        vdom: str = None,
+        comment: str = None,
+        trusted_hosts_ipv6=None,
+    ) -> str:
+        """
+        Helper method to create an API account, using the ssh method under the covers.  Username and password
+        must be specified for ssh to work.  for now only supports ipv4 trusted hosts.  ipv6 trusted hosts in future and optional
+
+        api_username == string (required)
+        accprofile == string (required) -- assumed to be valid and exist on the box already
+        trusted_hosts_ipv4 == list of IP / subnets in CIDR notation -- i.e. ["192.168.1.0/24", "192.168.1.1/32"]
+        trusted_hosts_ipv6 == None.  not yet implemented to allow ipv6 trusted sources.
+        vdom == string.  defaults to self.vdom if not specified, which if THAT is None, then will be "root"
+        comment == string (optional)
+
+        returns the API key of the created API user.  Could set self.apitoken to this value but may not be desired
+        """
+
+        # input validation:
+        if not isinstance(api_username, str):
+            raise ValueError("api_username must be a string")
+        elif not isinstance(accprofile, str):
+            raise ValueError("accprofile must be a string")
+        if comment is not None:
+            if not isinstance(comment, str):
+                raise ValueError("if comment specified, must be a string or None type")
+        else:
+            # comment is None, so set to default value
+            comment = "API User Account"
+        if not isinstance(trusted_hosts_ipv4, list):
+            raise ValueError(
+                "trusted_hosts_ipv4 must be a list of valid IP Networks in CIDR format"
+            )
+        else:
+            # verify address and construct string for trusthosts
+            str_trusted_hosts_v4 = "config trusthost\n"
+            for idx, addr in enumerate(trusted_hosts_ipv4, start=1):
+                try:
+                    ip = ipaddress.IPv4Network(addr)
+                    str_trusted_hosts_v4 += f"edit {idx}\nset ipv4-trusthost {ip.network_address} {ip.netmask}\nnext\n"
+                except (ipaddress.NetmaskValueError, ipaddress.AddressValueError):
+                    raise ValueError(f"{addr} is not a valid IP network.")
+
+        # check vdom -- if vdom is None and self.vdom is None, set vdom="root", otherwise if vdom is None,
+        # use the object's vdom value
+        if vdom is None and self.vdom is None:
+            vdom = "root"
+        elif vdom is None:
+            vdom = self.vdom
+
+        cmds = f"""config system api-user
+edit "{api_username}"
+set comments "{comment}"
+set accprofile "{accprofile}"
+set vdom "{vdom}"
+{str_trusted_hosts_v4}
+end
+next
+end
+"""
+        # create API User
+        self.ssh(cmds, vdom=vdom)
+
+        # create API Key for user
+        gen_api_cmd = f"execute api-user generate-key {api_username}"
+        api_key_output = self.ssh(gen_api_cmd, vdom=vdom)
+
+        # begin TextFSM parse to get API Key from command response
+        template = textfsm.TextFSM(API_KEY_TEXT_FSM)
+        # either Paramiko or the fortiosapi ssh command escapes the new line characters, so we have to replace them back
+        # in order for TextFSM to parse correctly
+        api_key_str = api_key_output[0].replace("\\n", "\n")
+        parsed_data = template.ParseText(api_key_str)
+        # not exactly sure why, but the TextFSM-parsed value comes back as a list of lists like [['api_key_here']]
+        api_key = parsed_data[0][0]
+
+        return api_key
 
     def get_facts(self, exclude_columns=None, vdom=None):
         """

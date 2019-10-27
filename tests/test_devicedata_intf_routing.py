@@ -61,7 +61,7 @@ class Test_FortigateArpTable:
         data.clean_data()
         data2 = data.get()
         assert data2.equals(data)
-
+        print(f"DATA INDEX: {data.index}")
         data_filtered = data.get(exclude_columns=["Interface"])
         assert "Interface" not in data_filtered.columns
 

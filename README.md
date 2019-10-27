@@ -100,6 +100,7 @@ vpns = dev.get_active_ipsec_vpns()
 ## TODO
 
 * Unit Tests
+* Documentation
 * more state data gathering / representation
   * Address Book Objects
   * format Facts Dictionary into simple DataFrame

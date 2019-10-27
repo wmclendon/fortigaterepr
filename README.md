@@ -74,9 +74,33 @@ print(interface_data)
 print(interface_data.get())
 ```
 
+## Creating an API User
+
+In cases where an existing API User does not exist, and / or API token not known, the library has a helper method that will create an api user via SSH and create its token, and return that token to the caller, which can then be saved or used as needed for future API calls.  A short example:
+
+```python
+dev = FortigateDevice(
+    "192.168.1.1",
+    username="labadmin",
+    password="labadmin1",
+    verify=False,
+)
+
+# note: The accprofile (in this example 'API_ADMIN_PROFILE' is assumed to already have been created with appropriate permissions)
+apikey = dev.create_api_user(
+    "devapi",
+    "API_ADMIN_PROFILE",
+    ["192.168.1.0/24", "172.16.1.0/24"],
+    comment="Example API User")
+
+dev.apitoken = apikey
+vpns = dev.get_active_ipsec_vpns()
+```
+
 ## TODO
 
 * Unit Tests
+* Documentation
 * more state data gathering / representation
   * Address Book Objects
   * format Facts Dictionary into simple DataFrame

@@ -50,6 +50,7 @@ class FortigateManagedAps(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -93,6 +94,7 @@ class FortigateWlanConnectedClients(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -156,6 +158,7 @@ class FortigateWlanRogueAps(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -178,17 +181,6 @@ class FortigateArpTable(pd.DataFrame):
 
     base_drop_columns = []
 
-    # template = None
-    # with open("templates/fortios_get_system_arp.template", encoding="utf-8") as t:
-    #     template = textfsm.TextFSM(t)
-    # COLUMNS = ["Address", "Age(min)", "MAC Address", "Interface"]
-
-    # def __init__(self, data):
-    #     # data provided as a list of the lines from the SSH Command, need to convert back to string so that TextFSM can parse
-    #     d = str(data)
-    #     super().__init__(self, d)
-    #     self.columns = COLUMNS
-
     def clean_data(self):
         """
         method to clean / normalize data, if necessary
@@ -200,6 +192,7 @@ class FortigateArpTable(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -321,6 +314,7 @@ class FortigateInterfaceDetails(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -360,6 +354,7 @@ class ForitgateDetectedDevices(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -389,6 +384,7 @@ class FortigateActiveIpsecVpns(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -443,6 +439,7 @@ class FortigateRouteTable(pd.DataFrame):
         returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -509,6 +506,7 @@ class FortigateFirewallPolicy(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:
@@ -572,6 +570,7 @@ class FortigateDhcpClientLeases(pd.DataFrame):
         returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
         """
         if isinstance(exclude_columns, list):
+            exclude_columns = [c for c in exclude_columns if c in self.columns]
             try:
                 return self.drop(exclude_columns, axis=1)
             except KeyError as e:

@@ -8,6 +8,45 @@ To gather data from the device, use one of the 'get' methods available such as `
 
 In general all of the data returned from the device API is stored in the DataFrame, though there is some data cleanup that can occur (i.e. converting epoch timestamp to readable date/time, replacing NaNs with "None" or "N/A", etc.).  Often the number of columns is quite large, and much of the data is not useful most of the time, so each DataFrame has a `get()` method that will return a copy of the DataFrame with certain columns removed (depends upon the table).  If the full DataFrame is needed, you can just reference the appropriate class instance property - i.e. `dev.interfaces`
 
+## Prerequisites
+
+To use the Fortigate REST API, the device must have a defined REST API admin account, with appropriate permissions.  In the GUI you can create an Admin Profile for the REST API admin account under System --> Admin Profiles --> Create New.  From there you can specify what permissions to give for the various sections.  Next, you create a REST API admin account -- in the GUI via System --> Administrators --> Create New --> REST API Admin.  Once you create the API Token you'll have to save it somewhere safe!
+
+Example CLI config:
+
+```bash
+config system accprofile
+    edit "API_ADMIN_PROFILE"
+        set comments "Admin Profile for REST API Access"
+        set secfabgrp read-write
+        set ftviewgrp read-write
+        set authgrp read-write
+        set sysgrp read-write
+        set netgrp read-write
+        set loggrp read-write
+        set fwgrp read-write
+        set vpngrp read-write
+        set utmgrp read-write
+        set wifi read-write
+    next
+end
+# create API User:
+config system api-user
+    edit "apiuser"
+        set comments "rest api user"
+        set api-key ENC API-TOKEN-ENCRYPTED-STRING-HERE
+        set accprofile "API_ADMIN_PROFILE"
+        set vdom "root"
+        set cors-allow-origin "https://fndn.fortinet.net" ## Allows API exploration with FNDN
+        config trusthost
+            edit 1
+                set ipv4-trusthost 192.168.1.0 255.255.255.0
+            next
+        end
+    next
+end
+```
+
 ## Basic Use
 
 Simple example usage:
@@ -43,4 +82,6 @@ print(interface_data.get())
   * format Facts Dictionary into simple DataFrame
   * how to add route table size?  as own dataframe, or somehow as part of Route Table DataFrame?
 * methods for other output formats -- i.e. a `to_html()` or `to_json()` method that takes all the stored data and writes it to HTML or JSON stdout or to a file.
+* add type hints
+* Improve dataframe return parsing for handling columns not existing in dataframe
 * other?

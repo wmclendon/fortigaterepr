@@ -12,6 +12,23 @@ import pandas as pd
 # to be done as part of an __init__ though because then can have __init__(self, raw_data) as the constructor, and then
 # have self.raw = raw_data for storing it as it came in -- would not be a dataframe though, but could save it as one.
 
+# subclassing Pandas seems way too complicated.  instead, factoring out the get() method logic from each subclass to a
+# generic method that takes the dataframe data, the list of exclude_columns, and returns the dataframe without those columns
+# that are present in the original frame
+def get_helper(df: pd.DataFrame, exclude_columns: list = None):
+    """
+    returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+    """
+    if isinstance(exclude_columns, list):
+        exclude_columns = [c for c in exclude_columns if c in df.columns]
+    else:
+        logging.info(
+            f"excluded_columns parameter is type {type(exclude_columns)}, should be list.  Returning data as-is"
+        )
+        exclude_columns = []
+
+    return df.drop(exclude_columns, axis=1)
+
 
 class FortigateManagedAps(pd.DataFrame):
     """
@@ -47,19 +64,9 @@ class FortigateManagedAps(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateWlanConnectedClients(pd.DataFrame):
@@ -91,19 +98,9 @@ class FortigateWlanConnectedClients(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateWlanRogueAps(pd.DataFrame):
@@ -155,19 +152,9 @@ class FortigateWlanRogueAps(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateArpTable(pd.DataFrame):
@@ -189,18 +176,9 @@ class FortigateArpTable(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateInterfaceDetails(pd.DataFrame):
@@ -311,18 +289,9 @@ class FortigateInterfaceDetails(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                # return self
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class ForitgateDetectedDevices(pd.DataFrame):
@@ -351,18 +320,9 @@ class ForitgateDetectedDevices(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateActiveIpsecVpns(pd.DataFrame):
@@ -381,21 +341,9 @@ class FortigateActiveIpsecVpns(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                # TODO:  in case of key error, should I return self (contains all columns stored) or
-                # TODO:  should I return self.get() which returns data with any base drop columns removed
-                # return self
-                # return self.get()
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateRouteTable(pd.DataFrame):
@@ -438,16 +386,7 @@ class FortigateRouteTable(pd.DataFrame):
         """
         returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                # return self
-        return self
+        return get_helper(self, exclude_columns)
 
 
 class FortigateFirewallPolicy(pd.DataFrame):
@@ -501,35 +440,22 @@ class FortigateFirewallPolicy(pd.DataFrame):
                 new_values[i] = item.get("name")
             self.at[idx, "service"] = new_values
 
-    def get(self, exclude_columns=base_drop_columns):
-        """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
-        """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-
-        # if no exclude_columns specified, then we return the same as get_simple_output:
-        if exclude_columns is None:
-            return self[self.simple_view_columns]
-
     def get_simple_output(self):
         """
         helper method to return simple table with small number of columns
         """
-        try:
-            return self[self.simple_view_columns]
-        except KeyError as e:
-            logging.info(
-                f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-            )
-            return self
+        cols = [c for c in self.simple_view_columns if c in self.columns]
+        return self[cols]
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        """
+        # if no exclude_columns specified, then we return the same as get_simple_output:
+        if exclude_columns is None:
+            return self.get_simple_output()
+
+        return get_helper(self, exclude_columns)
 
 
 class FortigateDhcpClientLeases(pd.DataFrame):
@@ -567,16 +493,6 @@ class FortigateDhcpClientLeases(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
+        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if isinstance(exclude_columns, list):
-            exclude_columns = [c for c in exclude_columns if c in self.columns]
-            try:
-                return self.drop(exclude_columns, axis=1)
-            except KeyError as e:
-                logging.info(
-                    f"Expected keys not found in {__class__.__name__} DataFrame: {e}, returning base DataFrame"
-                )
-                return self
-
-        return self
+        return get_helper(self, exclude_columns)

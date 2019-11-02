@@ -47,9 +47,43 @@ config system api-user
 end
 ```
 
+### Creating an Admin Profile for API Accounts
+
+fortigaterepr offers some helpful methods to bootstrap creation of admin profiles and rest API users.  It currently supports creating basic read only or read-write admin profiles.  More granular permissions are possible, but are expected to be implemented outside of this library at this time.  The custom profile can be specified when creating the API User if needed.  Below is example of using fortigaterepr to create read only and readwrite profiles.  The `create_admin_profile()` function returns the name of the profile upon success.
+
+```python
+from fortigaterepr.fortigaterepr import FortigateDevice
+# create device:
+dev = FortigateDevice("192.0.2.50", username="username", password="password", verify=False)
+# below will return the default RO profile name "API_RO_PROFILE"
+ro_profile_name = dev.create_admin_profile(profile_type="RO")
+
+# below will return the custom RW profile name "test_rw_profile"
+rw_profile_name = dev.create_admin_profile(profile_type="RW", profile_name="test_rw_profile")
+```
+
+### Creating an API User
+
+In cases where an existing API User does not exist, and / or API token not known, the library has a helper method that will create an api user via SSH and create its token, and return that token to the caller, which can then be saved or used as needed for future API calls.  A short example that creates a RO and RW api user (based on profiles created above):
+
+```python
+dev = FortigateDevice("192.0.2.50", username="username", password="password", verify=False)
+
+# create a read only api account, and store its api key that is generated
+ro_apikey = dev.create_api_user(
+    "ro-devapi",
+    profile_name=ro_profile_name,
+    trusted_hosts_ipv4=["192.168.1.0/24",
+    "172.16.1.0/24"],
+    comment="Test API User")
+# associate api key to device, and get some data
+dev.apitoken = ro_apikey
+vpns = dev.get_active_ipsec_vpns()
+```
+
 ## Basic Use
 
-Simple example usage:
+Simple example usage assuming API User and token already exists:
 
 ```python
 from fortigaterepr.fortigaterepr import FortigateDevice
@@ -74,36 +108,12 @@ print(interface_data)
 print(interface_data.get())
 ```
 
-## Creating an API User
-
-In cases where an existing API User does not exist, and / or API token not known, the library has a helper method that will create an api user via SSH and create its token, and return that token to the caller, which can then be saved or used as needed for future API calls.  A short example:
-
-```python
-dev = FortigateDevice(
-    "192.168.1.1",
-    username="labadmin",
-    password="labadmin1",
-    verify=False,
-)
-
-# note: The accprofile (in this example 'API_ADMIN_PROFILE' is assumed to already have been created with appropriate permissions)
-apikey = dev.create_api_user(
-    "devapi",
-    "API_ADMIN_PROFILE",
-    ["192.168.1.0/24", "172.16.1.0/24"],
-    comment="Example API User")
-
-dev.apitoken = apikey
-vpns = dev.get_active_ipsec_vpns()
-```
-
 ## TODO
 
 * Unit Tests
 * Documentation
 * more state data gathering / representation
   * Address Book Objects
-  * format Facts Dictionary into simple DataFrame
   * how to add route table size?  as own dataframe, or somehow as part of Route Table DataFrame?
 * methods for other output formats -- i.e. a `to_html()` or `to_json()` method that takes all the stored data and writes it to HTML or JSON stdout or to a file.
 * add type hints

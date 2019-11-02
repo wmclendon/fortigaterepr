@@ -3,13 +3,15 @@ import logging
 
 import pandas as pd
 
+from typing import List, Tuple
+
 
 # subclassing Pandas seems way too complicated to then also add exclude_columns or other properties.  instead, factoring out the get() method logic from each subclass to a
 # generic method that takes the dataframe data, the list of exclude_columns, and returns the dataframe without those columns
 # that are present in the original frame
 
 
-def get_helper(df: pd.DataFrame, exclude_columns: list = None):
+def get_helper(df: pd.DataFrame, exclude_columns: List = None) -> pd.DataFrame:
     """
     returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults
     """
@@ -22,6 +24,28 @@ def get_helper(df: pd.DataFrame, exclude_columns: list = None):
         exclude_columns = []
 
     return df.drop(exclude_columns, axis=1)
+
+
+def clean_columns_helper(
+    df: pd.DataFrame, clean_columns: List[Tuple[str, str]]
+) -> pd.DataFrame:
+    """
+    helper method to clean up column data that would otherwise be an NaN value or similar.
+
+    Takes the original dataframe and a list of tuples defining the column name and NA value
+
+    Returns cleaned up dataframe
+    """
+    if len(clean_columns) == 0:
+        # empty list of clean_columns, return df dataframe unchanged
+        return df
+
+    for c in clean_columns:
+        try:
+            df[c[0]].fillna(c[1], inplace=True)
+        except KeyError:
+            logging.info(f"Column {c[0]} not found in data, skipping.")
+    return df
 
 
 class FortigateManagedAps(pd.DataFrame):
@@ -54,7 +78,8 @@ class FortigateManagedAps(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        pass
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -88,7 +113,8 @@ class FortigateWlanConnectedClients(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        pass
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -131,18 +157,7 @@ class FortigateWlanRogueAps(pd.DataFrame):
             ("ssid", "None / Unknown"),
         ]
 
-        for c in clean_columns:
-            try:
-                self[c[0]].fillna(c[1], inplace=True)
-            except KeyError:
-                logging.info(f"Column {c[0]} not found in data, skipping.")
-
-        # if "manufacturer" in self:
-        #     self["manufacturer"].fillna("Unknown", inplace=True)
-        # if "encryption" in self:
-        #     self["encryption"].fillna("None / Unknown", inplace=True)
-        # if "ssid" in self:
-        #     self["ssid"].fillna("None / Unknown", inplace=True)
+        self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -166,7 +181,8 @@ class FortigateArpTable(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        pass
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -242,31 +258,7 @@ class FortigateInterfaceDetails(pd.DataFrame):
             ("duplex", "N/A"),
         ]
 
-        for c in clean_columns:
-            try:
-                self[c[0]].fillna(c[1], inplace=True)
-            except KeyError:
-                logging.info(f"Column {c[0]} not found in data, skipping.")
-
-        # TODO:  Iterate over list of tuples containing column names and fillna values!
-        # try:
-        #     self["vdom"].fillna("N/A", inplace=True)
-        # except KeyError:
-        #     logging.info("Key not found!")
-        # self["status"].fillna("N/A", inplace=True)
-        # self["mac_address"].fillna("N/A", inplace=True)
-        # self["alias"].fillna("None", inplace=True)
-        # self["zone"].fillna("N/A", inplace=True)
-        # self["ipv4_addresses"].fillna("None", inplace=True)
-        # self["link"].fillna("N/A", inplace=True)
-        # self["speed"].fillna("N/A", inplace=True)
-        # self["media"].fillna("N/A", inplace=True)
-        # try:
-        #     self["description"].fillna("None", inplace=True)
-        # except KeyError:
-        #     logging.info("Key not found!")
-
-        # self["duplex"].fillna("N/A", inplace=True)
+        self = clean_columns_helper(self, clean_columns)
 
         # for now going to convert the IP representation to CIDR notation.
         # also presumes no multi-netting at this time...
@@ -310,7 +302,8 @@ class ForitgateDetectedDevices(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        pass
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -331,7 +324,8 @@ class FortigateActiveIpsecVpns(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        pass
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
         """
@@ -358,12 +352,7 @@ class FortigateRouteTable(pd.DataFrame):
             ("tunnel_parent", "N/A"),
             ("is_tunnel_route", "N/A"),
         ]
-
-        for c in clean_columns:
-            try:
-                self[c[0]].fillna(c[1], inplace=True)
-            except KeyError:
-                logging.info(f"Column {c[0]} not found in data, skipping.")
+        self = clean_columns_helper(self, clean_columns)
 
         # this column, if present, requires special processing, so outside the for loop above
         if "install_date" in self:
@@ -408,6 +397,9 @@ class FortigateFirewallPolicy(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
+
         for idx, rule in self.iterrows():
             new_values = rule["srcintf"]
             for i, item in enumerate(new_values):
@@ -468,22 +460,12 @@ class FortigateDhcpClientLeases(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = [("vci", "N/A"), ("hostname", "None / Unknown")]
-
-        for c in clean_columns:
-            try:
-                self[c[0]].fillna(c[1], inplace=True)
-            except KeyError:
-                logging.info(f"Column {c[0]} not found in data, skipping.")
+        self = clean_columns_helper(self, clean_columns)
 
         if "expire_time" in self:
             self["expire_time"] = pd.to_datetime(
                 self["expire_time"], errors="coerce", unit="s"
             )
-
-        # if "vci" in self:
-        #     self["vci"].fillna("N/A", inplace=True)
-        # if "hostname" in self:
-        #     self["hostname"].fillna("None / Unknown", inplace=True)
 
     def get(self, exclude_columns=base_drop_columns):
         """

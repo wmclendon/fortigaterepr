@@ -62,7 +62,13 @@ class FortigateDevice:
     """
 
     def __init__(
-        self, host, username=None, password=None, apitoken=None, verify=True, debug="off"
+        self,
+        host,
+        username=None,
+        password=None,
+        apitoken=None,
+        verify=True,
+        debug="off",
     ):
         """
         must specify hostname / IP address of device

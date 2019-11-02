@@ -3,18 +3,12 @@ import logging
 
 import pandas as pd
 
-# TODO:  Should each class have an attribute for storing the original raw output when its created, that way if it
-# ever needs to be used to feed back into a FortigateDevice it can have the exact same format, structure, etc apart
-# from the clean_data() operation.
-# Believe this would require a new __init__() method to set a self.raw variable.  not sure how to do this as extension
-# to a Pandas DataFrame -- need to call super() first I think.  or could potentially as a first step of clean_data()
-# where it checks if self.raw is None, and if yes, copy over the data first, then initiate cleanup.  I think it needs
-# to be done as part of an __init__ though because then can have __init__(self, raw_data) as the constructor, and then
-# have self.raw = raw_data for storing it as it came in -- would not be a dataframe though, but could save it as one.
 
-# subclassing Pandas seems way too complicated.  instead, factoring out the get() method logic from each subclass to a
+# subclassing Pandas seems way too complicated to then also add exclude_columns or other properties.  instead, factoring out the get() method logic from each subclass to a
 # generic method that takes the dataframe data, the list of exclude_columns, and returns the dataframe without those columns
 # that are present in the original frame
+
+
 def get_helper(df: pd.DataFrame, exclude_columns: list = None):
     """
     returns copy of data itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method, with some specific defaults

@@ -1,3 +1,32 @@
+FW_FACTS = {
+    "vendor": "Fortinet",
+    "model": "Fortigate Model TBD",
+    "uptime": None,
+    "hostname": None,
+    "fqdn": None,
+    "os_version": "v6.0.6 build 272",
+    "serial_number": "FWF60D4615007492",
+    "interface_list": [
+        "any",
+        "dmz",
+        "wan1",
+        "wan2",
+        "modem",
+        "ssl.root",
+        "lan",
+        "internal1",
+        "internal2",
+        "internal3",
+        "internal4",
+        "internal5",
+        "internal6",
+        "internal7",
+        "internal",
+        "VMLAB-UPLINK",
+        "AWS-test",
+        "virtual-wan-link",
+    ],
+}
 FW_POLICY_RESULT = [
     {
         "q_origin_key": 3,

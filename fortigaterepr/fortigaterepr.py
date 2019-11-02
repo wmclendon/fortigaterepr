@@ -309,7 +309,7 @@ end
 
         return api_key
 
-    def get_facts(self, exclude_columns=None, vdom=None):
+    def get_facts(self, exclude_columns=None, vdom=None, as_dict=False):
         """
         get device facts
 
@@ -323,6 +323,8 @@ end
         * os_version -- can be retrieved as part of api login
         * serial_number -- can be retrieved as part of api login
         * interface_list -- retrieved via /system/available-interfaces/select -- can populate device interface table at same time
+
+        method sets the various self.facts dictionary keys, but by default returns a DataFrame representation
         """
         # TODO: Set each self.facts[VARIABLE]
         # NOTE:  Some facts can get set during the API login
@@ -356,10 +358,13 @@ end
             "os_version"
         ] = f"{basic_facts.get('version')} build {basic_facts.get('build')}"
 
-        # FORTIGATEREPR_LOGGER.debug(basic_facts)
         # as of now facts are a dict, to normalize to a simple DataFrame...
-        # self.facts = pd.DataFrame.from_dict(self.facts, orient='index')
-        return self.facts
+        self.facts_df = pd.DataFrame.from_dict(self.facts, orient="index")
+
+        if as_dict is True:
+            return self.facts
+
+        return self.facts_df
 
     def get_arp_table(self, exclude_columns=None, vdom=None):
         """
@@ -479,7 +484,6 @@ edit {vdom}
         if vdom is None:
             vdom = self.vdom
         self.rest_check_session()
-        # if interfaces not already populated from get_facts, then get the interface data:
         if self.fw_policy_ipv4 is None:
             result = self.devapi.get("firewall", "policy", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
@@ -499,7 +503,6 @@ edit {vdom}
         if vdom is None:
             vdom = self.vdom
         self.rest_check_session()
-        # if interfaces not already populated from get_facts, then get the interface data:
         if self.fw_policy_ipv6 is None:
             result = self.devapi.get("firewall6", "policy", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
@@ -519,7 +522,6 @@ edit {vdom}
         if vdom is None:
             vdom = self.vdom
         self.rest_check_session()
-        # if interfaces not already populated from get_facts, then get the interface data:
         if self.managed_aps is None:
             result = self.devapi.monitor("wifi/managed_ap", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
@@ -539,7 +541,6 @@ edit {vdom}
         if vdom is None:
             vdom = self.vdom
         self.rest_check_session()
-        # if interfaces not already populated from get_facts, then get the interface data:
         if self.wlan_connected_clients is None:
             result = self.devapi.monitor("wifi/client", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
@@ -559,7 +560,6 @@ edit {vdom}
         if vdom is None:
             vdom = self.vdom
         self.rest_check_session()
-        # if interfaces not already populated from get_facts, then get the interface data:
         if self.wlan_rogue_aps is None:
             result = self.devapi.monitor("wifi/rogue_ap", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):
@@ -579,7 +579,6 @@ edit {vdom}
         if vdom is None:
             vdom = self.vdom
         self.rest_check_session()
-        # if interfaces not already populated from get_facts, then get the interface data:
         if self.dhcp_client_leases is None:
             result = self.devapi.monitor("system/dhcp", "select", vdom=vdom)
             if not self.rest_monitor_check_resp(result):

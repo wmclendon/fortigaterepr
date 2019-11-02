@@ -11,6 +11,7 @@ import textfsm
 import urllib3
 from fortiosapi import FortiOSAPI
 from fortiosapi.exceptions import InvalidLicense, NotLogged
+from typing import Optional
 
 from fortigaterepr.devicedata import (
     ForitgateDetectedDevices,
@@ -25,6 +26,40 @@ from fortigaterepr.devicedata import (
     FortigateWlanRogueAps,
 )
 
+RO_PROFILE_COMMANDS = """
+config system accprofile
+    edit "{}"
+        set comments "Read Only Profile for API Access"
+        set secfabgrp read
+        set ftviewgrp read
+        set authgrp read
+        set sysgrp read
+        set netgrp read
+        set loggrp read
+        set fwgrp read
+        set vpngrp read
+        set utmgrp read
+        set wifi read
+    next
+end
+"""
+RW_PROFILE_COMMANDS = """
+config system accprofile
+    edit "{}"
+        set comments "Read-Write Profile for API Access"
+        set secfabgrp read-write
+        set ftviewgrp read-write
+        set authgrp read-write
+        set sysgrp read-write
+        set netgrp read-write
+        set loggrp read-write
+        set fwgrp read-write
+        set vpngrp read-write
+        set utmgrp read-write
+        set wifi read-write
+    next
+end
+"""
 ARP_TEXT_FSM = StringIO(
     """Value ADDRESS (\\d+\\.\\d+\\.\\d+\\.\\d+)
 Value AGE (\\d+)
@@ -63,12 +98,12 @@ class FortigateDevice:
 
     def __init__(
         self,
-        host,
-        username=None,
-        password=None,
-        apitoken=None,
-        verify=True,
-        debug="off",
+        host: Optional[str],
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        apitoken: Optional[str] = None,
+        verify: bool = True,
+        debug: Optional[str] = "off",
     ):
         """
         must specify hostname / IP address of device
@@ -225,6 +260,48 @@ edit {vdom}
         except Exception as e:
             FORTIGATEREPR_LOGGER.error(f"UNKNOWN EXCEPTION: {str(e)}")
             return False
+
+    def create_admin_profile(
+        self, profile_type: str = "RO", profile_name: str = None, vdom: str = None
+    ):
+        """
+        helper method that will create a basic Read Only (RO) or Read-Write (RW) Admin Profile to then be
+        assigned to an API user that needs to be created.  This is meant to help enable a device for API access.
+
+        This operation is NOT idempotent.  It will recreate / overwrite the profile if it already exists.
+
+        Does not currently allow specifying name of the profile
+        * for RO it will be "API_RO_PROFILE"
+        * for RW it will be "API_RW_PROFILE"
+
+        profile_name is optional.  if not specified, will default to these values:
+        * for RO it will be "API_RO_PROFILE"
+        * for RW it will be "API_RW_PROFILE"
+        """
+        # check vdom -- if vdom is None and self.vdom is None, set vdom="root", otherwise if vdom is None,
+        # use the object's vdom value
+        if vdom is None and self.vdom is None:
+            vdom = "root"
+        elif vdom is None:
+            vdom = self.vdom
+        if profile_type.upper() == "RO":
+            if profile_name is not None:
+                PROF_NAME = profile_name
+            else:
+                PROF_NAME = "API_RO_PROFILE"
+            cmds = RO_PROFILE_COMMANDS.format(PROF_NAME)
+        elif profile_type.upper() == "RW":
+            if profile_name is not None:
+                PROF_NAME = profile_name
+            else:
+                PROF_NAME = "API_RW_PROFILE"
+            cmds = RW_PROFILE_COMMANDS.format(PROF_NAME)
+        else:
+            raise ValueError(f"invalid profile_type specified.  must be 'RO' or 'RW'")
+
+        # create Admin Profile -- if success, returns the profile name
+        if self.ssh(cmds, vdom=vdom):
+            return PROF_NAME
 
     def create_api_user(
         self,

@@ -238,6 +238,9 @@ class FortigateInterfaceDetails(pd.DataFrame):
         "is_wifi",
         "ssid",
         "is_local_bridge",
+        "is_software_switch",
+        "used_by_aggregate_or_switch",
+        "vlan_interface",
     ]
 
     def clean_data(self):
@@ -256,6 +259,12 @@ class FortigateInterfaceDetails(pd.DataFrame):
             ("media", "N/A"),
             ("Description", "None"),
             ("duplex", "N/A"),
+            ("is_software_switch", False),
+            ("used_by_aggregate_or_switch", False),
+            ("is_vlan", False),
+            ("vlan_interface", "None"),
+            ("vlan_id", "N/A"),
+            ("ipv6_addresses", "None"),
         ]
 
         self = clean_columns_helper(self, clean_columns)
@@ -263,15 +272,22 @@ class FortigateInterfaceDetails(pd.DataFrame):
         # for now going to convert the IP representation to CIDR notation.
         # also presumes no multi-netting at this time...
         for idx, item in self.iterrows():
-            if isinstance(item["ipv4_addresses"], list):
+            if isinstance(item.get("ipv4_addresses"), list):
                 ip_addr = str(
                     ipaddress.ip_interface(
                         f"{item['ipv4_addresses'][0]['ip']}/{item['ipv4_addresses'][0]['netmask']}"
                     )
                 )
-                # ip_addr = f"{item['ipv4_addresses'][0]['ip']}/{item['ipv4_addresses'][0]['netmask']}"
-
                 self.at[idx, "ipv4_addresses"] = ip_addr
+            if isinstance(item.get("ipv6_addresses"), list):
+                ip6_addr = str(
+                    ipaddress.ip_interface(
+                        f"{item['ipv6_addresses'][0]['ip']}/{item['ipv6_addresses'][0]['cidr_netmask']}"
+                    )
+                )
+                self.at[idx, "ipv6_addresses"] = ip6_addr
+            if isinstance(item.get("vlan_id"), float):
+                self.at[idx, "vlan_id"] = int(item.get("vlan_id"))
 
     def get(self, exclude_columns=base_drop_columns):
         """

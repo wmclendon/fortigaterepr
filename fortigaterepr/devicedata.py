@@ -302,7 +302,12 @@ class ForitgateDetectedDevices(pd.DataFrame):
         """
         method to clean / normalize data, if necessary
         """
-        clean_columns = []
+        clean_columns = [
+            ("hostname", "Unknown"),
+            ("os_name", "Unknown"),
+            ("os_version", "Unknown"),
+            ("ipv6_address", "Unknown"),
+        ]
         self = clean_columns_helper(self, clean_columns)
 
     def get(self, exclude_columns=base_drop_columns):
@@ -435,7 +440,7 @@ class FortigateFirewallPolicy(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method
         """
         # if no exclude_columns specified, then we return the same as get_simple_output:
         if exclude_columns is None:

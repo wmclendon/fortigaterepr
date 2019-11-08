@@ -68,6 +68,12 @@ class Test_FortigateFirewallPolicy:
         assert data["name"].str.contains(example_name).any()
         numpy.testing.assert_array_equal(data["srcaddr"][1], example_srcaddr)
         numpy.testing.assert_array_equal(data["dstaddr"][1], example_dstaddr)
+        # test get() where exclude_columns=None
+        data_test = data.get(exclude_columns=None)
+        assert data_test.equals(data.get_simple_output())
+        data_get = data.get()
+        assert isinstance(data_get, pd.DataFrame)
+        assert data_get.equals(data)
 
     def test_get_simple_output(self):
         example_name = "FW_POLICY02"

@@ -43,17 +43,32 @@ class Test_FortigateFirewallPolicy:
         data = FortigateFirewallPolicy(copy.deepcopy(FW_POLICY_RESULT))
         assert isinstance(data, pd.DataFrame)
 
-        assert "policyid" in data.columns
-        assert "name" in data.columns
-        assert "logtraffic" in data.columns
-        assert "application" in data.columns
-        assert "action" in data.columns
-        assert "service" in data.columns
-        assert "dstaddr" in data.columns
-        assert "dstintf" in data.columns
-        assert "srcaddr" in data.columns
-        assert "srcintf" in data.columns
-        assert "comments" in data.columns
+        expected_columns = [
+            "policyid",
+            "name",
+            "logtraffic",
+            "application",
+            "action",
+            "service",
+            "dstaddr",
+            "dstintf",
+            "srcaddr",
+            "srcintf",
+            "comments",
+        ]
+        for col in expected_columns:
+            assert col in data.columns
+        # assert "policyid" in data.columns
+        # assert "name" in data.columns
+        # assert "logtraffic" in data.columns
+        # assert "application" in data.columns
+        # assert "action" in data.columns
+        # assert "service" in data.columns
+        # assert "dstaddr" in data.columns
+        # assert "dstintf" in data.columns
+        # assert "srcaddr" in data.columns
+        # assert "srcintf" in data.columns
+        # assert "comments" in data.columns
         assert data["name"].str.contains(example_name).any()
         numpy.testing.assert_array_equal(data["srcaddr"][1], example_srcaddr)
         numpy.testing.assert_array_equal(data["dstaddr"][1], example_dstaddr)

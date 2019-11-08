@@ -71,14 +71,14 @@ class Test_FortigateInterfaceDetails:
 
     def test_basic_data(self):
         example_name = "wan1"
-        example_vdom = "root"
-        example_status = "up"
-        example_ipv4_addr = "10.110.1.128/22"
-        example_mac_addr = "e8:1c:ba:4f:d7:4e"
-        example_link = "up"
-        example_duplex = "full"
-        example_speed = 1000
-        example_media = "rj45"
+        # example_vdom = "root"
+        # example_status = "up"
+        # example_ipv4_addr = "10.110.1.128/22"
+        # example_mac_addr = "e8:1c:ba:4f:d7:4e"
+        # example_link = "up"
+        # example_duplex = "full"
+        # example_speed = 1000
+        # example_media = "rj45"
 
         data = FortigateInterfaceDetails(copy.deepcopy(INTERFACE_DETAILS_RESULT))
         assert isinstance(data, pd.DataFrame)

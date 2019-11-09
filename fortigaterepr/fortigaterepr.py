@@ -25,6 +25,7 @@ from fortigaterepr.devicedata import (
     FortigateWlanConnectedClients,
     FortigateWlanRogueAps,
     FortigateServices,
+    FortigateServiceGroups,
 )
 
 RO_PROFILE_COMMANDS = """
@@ -150,6 +151,7 @@ class FortigateDevice:
         self.wlan_rogue_aps = None
         self.dhcp_client_leases = None
         self.fw_services = None
+        self.fw_service_groups = None
 
     def rest_monitor_check_resp(self, resp) -> bool:
         """
@@ -688,3 +690,22 @@ edit {vdom}
             data.clean_data()
             self.fw_services = data
         return self.fw_services
+
+    def get_fw_service_groups(self, vdom=None) -> pd.DataFrame:
+        """
+        get Firewall's Service Definitions
+        """
+        if vdom is None:
+            vdom = self.vdom
+        self.rest_check_session()
+        if self.fw_service_groups is None:
+            result = self.devapi.get("firewall.service", "group", vdom=vdom)
+            if not self.rest_monitor_check_resp(result):
+                FORTIGATEREPR_LOGGER.error(
+                    "Response encountered error, returning None."
+                )
+                return None
+            data = FortigateServiceGroups(result.get("results"))
+            data.clean_data()
+            self.fw_service_groups = data
+        return self.fw_service_groups

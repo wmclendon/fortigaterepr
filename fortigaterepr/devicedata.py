@@ -48,6 +48,35 @@ def clean_columns_helper(
     return df
 
 
+class FortigateServiceGroups(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    base_drop_columns = ["q_origin_key", "proxy", "color"]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
+        for idx, item in self.iterrows():
+            if isinstance(item.get("member"), list):
+                members = ", ".join(member.get("name") for member in item.get("member"))
+                self.at[idx, "member"] = members
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        """
+        return get_helper(self, exclude_columns)
+
+
 class FortigateServices(pd.DataFrame):
     """
     subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and

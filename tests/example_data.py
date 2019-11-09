@@ -1333,3 +1333,73 @@ FW_SERVICES = [
         "application": [],
     },
 ]
+
+FW_SERVICE_GROUPS = [
+    {
+        "q_origin_key": "Email Access",
+        "name": "Email Access",
+        "member": [
+            {"q_origin_key": "DNS", "name": "DNS"},
+            {"q_origin_key": "IMAP", "name": "IMAP"},
+            {"q_origin_key": "IMAPS", "name": "IMAPS"},
+            {"q_origin_key": "POP3", "name": "POP3"},
+            {"q_origin_key": "POP3S", "name": "POP3S"},
+            {"q_origin_key": "SMTP", "name": "SMTP"},
+            {"q_origin_key": "SMTPS", "name": "SMTPS"},
+        ],
+        "proxy": "disable",
+        "comment": "",
+        "color": 0,
+    },
+    {
+        "q_origin_key": "Exchange Server",
+        "name": "Exchange Server",
+        "member": [
+            {"q_origin_key": "DCE-RPC", "name": "DCE-RPC"},
+            {"q_origin_key": "DNS", "name": "DNS"},
+            {"q_origin_key": "HTTPS", "name": "HTTPS"},
+        ],
+        "proxy": "disable",
+        "comment": "",
+        "color": 0,
+    },
+    {
+        "q_origin_key": "Web Access",
+        "name": "Web Access",
+        "member": [
+            {"q_origin_key": "DNS", "name": "DNS"},
+            {"q_origin_key": "HTTP", "name": "HTTP"},
+            {"q_origin_key": "HTTPS", "name": "HTTPS"},
+        ],
+        "proxy": "disable",
+        "comment": "",
+        "color": 0,
+    },
+    {
+        "q_origin_key": "Windows AD",
+        "name": "Windows AD",
+        "member": [
+            {"q_origin_key": "DCE-RPC", "name": "DCE-RPC"},
+            {"q_origin_key": "DNS", "name": "DNS"},
+            {"q_origin_key": "KERBEROS", "name": "KERBEROS"},
+            {"q_origin_key": "LDAP", "name": "LDAP"},
+            {"q_origin_key": "LDAP_UDP", "name": "LDAP_UDP"},
+            {"q_origin_key": "SAMBA", "name": "SAMBA"},
+            {"q_origin_key": "SMB", "name": "SMB"},
+        ],
+        "proxy": "disable",
+        "comment": "",
+        "color": 0,
+    },
+    {
+        "q_origin_key": "Example Group",
+        "name": "Example Group",
+        "member": [
+            {"q_origin_key": "HTTP", "name": "HTTP"},
+            {"q_origin_key": "HTTPS", "name": "HTTPS"},
+        ],
+        "proxy": "disable",
+        "comment": "Example Group Comment",
+        "color": 0,
+    },
+]

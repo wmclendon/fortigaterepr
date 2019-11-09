@@ -15,9 +15,15 @@ from fortigaterepr.devicedata import (
     FortigateActiveIpsecVpns,
     FortigateFirewallPolicy,
     FortigateServices,
+    FortigateServiceGroups,
 )
 
-from .example_data import ACTIVE_VPN_RESULT, FW_POLICY_RESULT, FW_SERVICES
+from .example_data import (
+    ACTIVE_VPN_RESULT,
+    FW_POLICY_RESULT,
+    FW_SERVICES,
+    FW_SERVICE_GROUPS,
+)
 
 
 class Test_TEMPLATE:
@@ -29,6 +35,38 @@ class Test_TEMPLATE:
 
     def test_get_method(self):
         pass
+
+
+class Test_FortigateServiceGroups:
+    """Class for testing FortigateServiceGroups functionality
+    """
+
+    def test_basic_data(self):
+        data = FortigateServiceGroups(FW_SERVICE_GROUPS)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateServiceGroups.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data(self):
+        service_group = "Example Group"
+        member = "HTTP, HTTPS"
+        comment = "Example Group Comment"
+        data = FortigateServiceGroups(copy.deepcopy(FW_SERVICE_GROUPS))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+        assert data["name"].str.contains(service_group).any()
+        assert data["member"].str.contains(member).any()
+        assert data["comment"].str.contains(comment).any()
+
+    def test_get_method(self):
+        data = FortigateServiceGroups(copy.deepcopy(FW_SERVICE_GROUPS))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateServiceGroups.base_drop_columns:
+            assert col not in data.columns
 
 
 class Test_FortigateServices:

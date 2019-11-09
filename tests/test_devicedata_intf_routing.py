@@ -87,6 +87,7 @@ class Test_FortigateInterfaceDetails:
         assert "vdom" in data.columns
         assert "status" in data.columns
         assert "ipv4_addresses" in data.columns
+        assert "ipv6_addresses" in data.columns
         assert "mac_address" in data.columns
         assert "link" in data.columns
         assert "duplex" in data.columns

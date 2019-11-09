@@ -11,9 +11,34 @@ import pandas as pd
 import pytest
 import requests
 
-from fortigaterepr.devicedata import FortigateActiveIpsecVpns, FortigateFirewallPolicy
+from fortigaterepr.devicedata import (
+    FortigateActiveIpsecVpns,
+    FortigateFirewallPolicy,
+    FortigateServices,
+    FortigateServiceGroups,
+    FortigateAddressObjects,
+    FortigateAddressGroups,
+    FortigateIpPool,
+    FortigateVips,
+    FortigateVipGroups,
+)
 
-from .example_data import ACTIVE_VPN_RESULT, FW_POLICY_RESULT
+from .example_data import (
+    ACTIVE_VPN_RESULT,
+    FW_POLICY_RESULT,
+    FW_SERVICES,
+    FW_SERVICE_GROUPS,
+    FW_OBJECTS_V4,
+    FW_OBJECTS_V6,
+    FW_ADDR_GROUP_V4,
+    FW_ADDR_GROUP_V6,
+    FW_IPPOOL_V4,
+    FW_IPPOOL_V6,
+    FW_VIP_V4,
+    FW_VIP_V6,
+    FW_VIP_GROUP_V4,
+    FW_VIP_GROUP_V6,
+)
 
 
 class Test_TEMPLATE:
@@ -25,6 +50,307 @@ class Test_TEMPLATE:
 
     def test_get_method(self):
         pass
+
+
+class Test_FortigateVipGroups:
+    """Class for testing FortigateVipGroups functionality
+    """
+
+    def test_basic_data_v4(self):
+        data = FortigateVipGroups(FW_VIP_GROUP_V4)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateVipGroups.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v4(self):
+        data = FortigateVipGroups(copy.deepcopy(FW_VIP_GROUP_V4))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v4(self):
+        data = FortigateVipGroups(copy.deepcopy(FW_VIP_GROUP_V4))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateVipGroups.base_drop_columns:
+            assert col not in data.columns
+
+    def test_basic_data_v6(self):
+        data = FortigateVipGroups(FW_VIP_GROUP_V6)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateVipGroups.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v6(self):
+        data = FortigateVipGroups(copy.deepcopy(FW_VIP_GROUP_V6))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v6(self):
+        data = FortigateVipGroups(copy.deepcopy(FW_VIP_GROUP_V6))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateVipGroups.base_drop_columns:
+            assert col not in data.columns
+
+
+class Test_FortigateVips:
+    """Class for testing FortigateVips functionality
+    """
+
+    def test_basic_data_v4(self):
+        data = FortigateVips(FW_VIP_V4)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateVips.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v4(self):
+        data = FortigateVips(copy.deepcopy(FW_VIP_V4))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v4(self):
+        data = FortigateVips(copy.deepcopy(FW_VIP_V4))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateVips.base_drop_columns:
+            assert col not in data.columns
+
+    def test_basic_data_v6(self):
+        data = FortigateVips(FW_VIP_V6)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateVips.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v6(self):
+        data = FortigateVips(copy.deepcopy(FW_VIP_V6))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v6(self):
+        data = FortigateVips(copy.deepcopy(FW_VIP_V6))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateVips.base_drop_columns:
+            assert col not in data.columns
+
+
+class Test_FortigateIpPool:
+    """Class for testing FortigateIpPool functionality
+    """
+
+    def test_basic_data_v4(self):
+        data = FortigateIpPool(FW_IPPOOL_V4)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateIpPool.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v4(self):
+        data = FortigateIpPool(copy.deepcopy(FW_IPPOOL_V4))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v4(self):
+        data = FortigateIpPool(copy.deepcopy(FW_IPPOOL_V4))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateIpPool.base_drop_columns:
+            assert col not in data.columns
+
+    def test_basic_data_v6(self):
+        data = FortigateIpPool(FW_IPPOOL_V6)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateIpPool.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v6(self):
+        data = FortigateIpPool(copy.deepcopy(FW_IPPOOL_V6))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v6(self):
+        data = FortigateIpPool(copy.deepcopy(FW_IPPOOL_V6))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateIpPool.base_drop_columns:
+            assert col not in data.columns
+
+
+class Test_FortigateAddressGroups:
+    """Class for testing FortigateAddressGroups functionality
+    """
+
+    v6_columns = ["q_origin_key", "uuid", "color"]
+
+    def test_basic_data_v4(self):
+        data = FortigateAddressGroups(FW_ADDR_GROUP_V4)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateAddressGroups.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v4(self):
+        data = FortigateAddressGroups(copy.deepcopy(FW_ADDR_GROUP_V4))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v4(self):
+        data = FortigateAddressGroups(copy.deepcopy(FW_ADDR_GROUP_V4))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateAddressGroups.base_drop_columns:
+            assert col not in data.columns
+
+    def test_basic_data_v6(self):
+        data = FortigateAddressGroups(FW_ADDR_GROUP_V6)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in self.v6_columns:
+            assert col in data.columns
+
+    def test_clean_data_v6(self):
+        data = FortigateAddressGroups(copy.deepcopy(FW_ADDR_GROUP_V6))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v6(self):
+        data = FortigateAddressGroups(copy.deepcopy(FW_ADDR_GROUP_V6))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateAddressGroups.base_drop_columns:
+            assert col not in data.columns
+
+
+class Test_FortigateAddressObjects:
+    """Class for testing FortigateAddressObjects functionality
+    """
+
+    v6_columns = ["q_origin_key", "uuid", "color", "sdn", "obj-id"]
+
+    def test_basic_data_v4(self):
+        data = FortigateAddressObjects(FW_OBJECTS_V4)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateAddressObjects.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data_v4(self):
+        data = FortigateAddressObjects(copy.deepcopy(FW_OBJECTS_V4))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v4(self):
+        data = FortigateAddressObjects(copy.deepcopy(FW_OBJECTS_V4))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateAddressObjects.base_drop_columns:
+            assert col not in data.columns
+
+    def test_basic_data_v6(self):
+        data = FortigateAddressObjects(FW_OBJECTS_V6)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in self.v6_columns:
+            assert col in data.columns
+
+    def test_clean_data_v6(self):
+        data = FortigateAddressObjects(copy.deepcopy(FW_OBJECTS_V6))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+
+    def test_get_method_v6(self):
+        data = FortigateAddressObjects(copy.deepcopy(FW_OBJECTS_V6))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateAddressObjects.base_drop_columns:
+            assert col not in data.columns
+
+
+class Test_FortigateServiceGroups:
+    """Class for testing FortigateServiceGroups functionality
+    """
+
+    def test_basic_data(self):
+        data = FortigateServiceGroups(FW_SERVICE_GROUPS)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateServiceGroups.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data(self):
+        service_group = "Example Group"
+        member = "HTTP, HTTPS"
+        comment = "Example Group Comment"
+        data = FortigateServiceGroups(copy.deepcopy(FW_SERVICE_GROUPS))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+        assert data["name"].str.contains(service_group).any()
+        assert data["member"].str.contains(member).any()
+        assert data["comment"].str.contains(comment).any()
+
+    def test_get_method(self):
+        data = FortigateServiceGroups(copy.deepcopy(FW_SERVICE_GROUPS))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateServiceGroups.base_drop_columns:
+            assert col not in data.columns
+
+
+class Test_FortigateServices:
+    """Class for testing FortigateServices functionality
+    """
+
+    def test_basic_data(self):
+        data = FortigateServices(FW_SERVICES)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateServices.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data(self):
+        protocol_names = ["icmp", "tcp", "gre", "esp", "ah", "icmp6"]
+        data = FortigateServices(copy.deepcopy(FW_SERVICES))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+        assert "protocol-name" in data.columns
+        for protocol in protocol_names:
+            assert data["protocol-name"].str.contains(protocol).any()
+
+    def test_get_method(self):
+        data = FortigateServices(copy.deepcopy(FW_SERVICES))
+        # data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateServices.base_drop_columns:
+            assert col not in data.columns
 
 
 class Test_FortigateFirewallPolicy:

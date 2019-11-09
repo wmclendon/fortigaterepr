@@ -486,7 +486,7 @@ edit {vdom}
         arp_table = arp_table[0].replace("\\n", "\n")
         parsed_data = template.ParseText(arp_table)
         data = FortigateArpTable(columns=COLUMNS, data=parsed_data)
-        data.clean_data()
+        # data.clean_data()
         self.arp_table = data
         return self.arp_table
 
@@ -517,7 +517,7 @@ edit {vdom}
             FORTIGATEREPR_LOGGER.error("Response encountered error, returning None.")
             return None
         data = FortigateRouteTable(route_table_info.get("results"))
-        data.clean_data()
+        # data.clean_data()
         # data = data.get(exclude_columns=exclude_columns)
         self.route_table = data
 
@@ -541,7 +541,7 @@ edit {vdom}
             FORTIGATEREPR_LOGGER.error("Response encountered error, returning None.")
             return None
         data = ForitgateDetectedDevices(result.get("results"))
-        data.clean_data()
+        # data.clean_data()
         self.detected_devices = data
         return self.detected_devices
 
@@ -560,7 +560,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateInterfaceDetails(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.interfaces = data
         return self.interfaces
 
@@ -579,7 +579,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateFirewallPolicy(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.fw_policy_ipv4 = data
         return self.fw_policy_ipv4
 
@@ -598,7 +598,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateFirewallPolicy(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.fw_policy_ipv6 = data
         return self.fw_policy_ipv6
 
@@ -617,7 +617,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateManagedAps(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.managed_aps = data
         return self.managed_aps
 
@@ -636,7 +636,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateWlanConnectedClients(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.wlan_connected_clients = data
         return self.wlan_connected_clients
 
@@ -655,7 +655,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateWlanRogueAps(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.wlan_rogue_aps = data
         return self.wlan_rogue_aps
 
@@ -674,7 +674,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateDhcpClientLeases(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.dhcp_client_leases = data
         return self.dhcp_client_leases
 
@@ -693,7 +693,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateServices(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.fw_services = data
         return self.fw_services
 
@@ -712,7 +712,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateServiceGroups(result.get("results"))
-            data.clean_data()
+            # data.clean_data()
             self.fw_service_groups = data
         return self.fw_service_groups
 
@@ -734,7 +734,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressObjects(result.get("results"))
-                data.clean_data()
+                # data.clean_data()
                 self.fw_address_objects = data
                 return self.fw_address_objects
         elif ip_version == 6:
@@ -746,7 +746,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressObjects(result.get("results"))
-                data.clean_data()
+                # data.clean_data()
                 self.fw_v6_address_objects = data
                 return self.fw_v6_address_objects
 
@@ -768,7 +768,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressGroups(result.get("results"))
-                data.clean_data()
+                # data.clean_data()
                 self.fw_address_groups = data
                 return self.fw_address_groups
         elif ip_version == 6:
@@ -780,6 +780,111 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressGroups(result.get("results"))
-                data.clean_data()
+                # data.clean_data()
                 self.fw_v6_address_groups = data
                 return self.fw_v6_address_groups
+<<<<<<< HEAD
+
+    def get_fw_ip_pool(self, vdom=None, ip_version: int = 4) -> pd.DataFrame:
+        """
+        get Firewall's IP Pool Definitions
+
+        specify ip_version = 4 or ip_version = 6 to get IPv4 (the default) or IPv6 IP Pools
+        """
+        if vdom is None:
+            vdom = self.vdom
+        self.rest_check_session()
+        if ip_version == 4:
+            if self.fw_ip_pool is None:
+                result = self.devapi.get("firewall", "ippool", vdom=vdom)
+                if not self.rest_monitor_check_resp(result):
+                    FORTIGATEREPR_LOGGER.error(
+                        "Response encountered error, returning None."
+                    )
+                    return None
+                data = FortigateIpPool(result.get("results"))
+                # data.clean_data()
+                self.fw_ip_pool = data
+                return self.fw_ip_pool
+        elif ip_version == 6:
+            if self.fw_v6_ip_pool is None:
+                result = self.devapi.get("firewall", "ippool6", vdom=vdom)
+                if not self.rest_monitor_check_resp(result):
+                    FORTIGATEREPR_LOGGER.error(
+                        "Response encountered error, returning None."
+                    )
+                    return None
+                data = FortigateIpPool(result.get("results"))
+                # data.clean_data()
+                self.fw_v6_ip_pool = data
+                return self.fw_v6_ip_pool
+
+    def get_fw_vips(self, vdom=None, ip_version: int = 4) -> pd.DataFrame:
+        """
+        get Firewall's IP Pool Definitions
+
+        specify ip_version = 4 or ip_version = 6 to get IPv4 (the default) or IPv6 IP Pools
+        """
+        if vdom is None:
+            vdom = self.vdom
+        self.rest_check_session()
+        if ip_version == 4:
+            if self.fw_vips is None:
+                result = self.devapi.get("firewall", "vip", vdom=vdom)
+                if not self.rest_monitor_check_resp(result):
+                    FORTIGATEREPR_LOGGER.error(
+                        "Response encountered error, returning None."
+                    )
+                    return None
+                data = FortigateVips(result.get("results"))
+                # data.clean_data()
+                self.fw_vips = data
+                return self.fw_vips
+        elif ip_version == 6:
+            if self.fw_v6_vips is None:
+                result = self.devapi.get("firewall", "vip6", vdom=vdom)
+                if not self.rest_monitor_check_resp(result):
+                    FORTIGATEREPR_LOGGER.error(
+                        "Response encountered error, returning None."
+                    )
+                    return None
+                data = FortigateVips(result.get("results"))
+                # data.clean_data()
+                self.fw_v6_vips = data
+                return self.fw_v6_vips
+
+    def get_fw_vip_groups(self, vdom=None, ip_version: int = 4) -> pd.DataFrame:
+        """
+        get Firewall's IP Pool Definitions
+
+        specify ip_version = 4 or ip_version = 6 to get IPv4 (the default) or IPv6 IP Pools
+        """
+        if vdom is None:
+            vdom = self.vdom
+        self.rest_check_session()
+        if ip_version == 4:
+            if self.fw_vip_groups is None:
+                result = self.devapi.get("firewall", "vipgrp", vdom=vdom)
+                if not self.rest_monitor_check_resp(result):
+                    FORTIGATEREPR_LOGGER.error(
+                        "Response encountered error, returning None."
+                    )
+                    return None
+                data = FortigateVipGroups(result.get("results"))
+                # data.clean_data()
+                self.fw_vip_groups = data
+                return self.fw_vip_groups
+        elif ip_version == 6:
+            if self.fw_v6_vip_groups is None:
+                result = self.devapi.get("firewall", "vipgrp6", vdom=vdom)
+                if not self.rest_monitor_check_resp(result):
+                    FORTIGATEREPR_LOGGER.error(
+                        "Response encountered error, returning None."
+                    )
+                    return None
+                data = FortigateVipGroups(result.get("results"))
+                # data.clean_data()
+                self.fw_v6_vip_groups = data
+                return self.fw_v6_vip_groups
+=======
+>>>>>>> parent of 9f4d2bb... added vips, vip groups with tests

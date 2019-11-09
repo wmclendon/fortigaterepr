@@ -195,7 +195,7 @@ class Test_FortigateServices:
 
     def test_get_method(self):
         data = FortigateServices(copy.deepcopy(FW_SERVICES))
-        data.clean_data()
+        # data.clean_data()
         data = data.get()
         assert isinstance(data, pd.DataFrame)
         # assert dropped columns are NOT present in the returned data:
@@ -243,24 +243,24 @@ class Test_FortigateFirewallPolicy:
         example_srcaddr = ["GROUP_OBJECT_NETWORKS"]
         example_dstaddr = ["NET_OBJ_192.0.2.0_25"]
         data = FortigateFirewallPolicy(copy.deepcopy(FW_POLICY_RESULT))
-        data.clean_data()
-        assert isinstance(data, pd.DataFrame)
-        assert data["name"].str.contains(example_name).any()
-        numpy.testing.assert_array_equal(data["srcaddr"][1], example_srcaddr)
-        numpy.testing.assert_array_equal(data["dstaddr"][1], example_dstaddr)
+        print(data)
+        data_clean = data.get()
+        assert isinstance(data_clean, pd.DataFrame)
+        assert data_clean["name"].str.contains(example_name).any()
+        numpy.testing.assert_array_equal(data_clean["srcaddr"][1], example_srcaddr)
+        numpy.testing.assert_array_equal(data_clean["dstaddr"][1], example_dstaddr)
         # test get() where exclude_columns=None
         data_test = data.get(exclude_columns=None)
         assert data_test.equals(data.get_simple_output())
         data_get = data.get()
         assert isinstance(data_get, pd.DataFrame)
-        assert data_get.equals(data)
+        assert data_get.equals(data_clean)
 
     def test_get_simple_output(self):
         example_name = "FW_POLICY02"
         example_srcaddr = ["GROUP_OBJECT_NETWORKS"]
         example_dstaddr = ["NET_OBJ_192.0.2.0_25"]
         data = FortigateFirewallPolicy(copy.deepcopy(FW_POLICY_RESULT))
-        data.clean_data()
         data = data.get_simple_output()
         assert isinstance(data, pd.DataFrame)
         assert data["name"].str.contains(example_name).any()
@@ -295,7 +295,7 @@ class Test_FortigateActiveIpsecVpns:
         example_rgwy = "192.0.2.198"
         example_creation_time = 643816
         data = FortigateActiveIpsecVpns(copy.deepcopy(ACTIVE_VPN_RESULT))
-        data.clean_data()
+        # data.clean_data()
         data = data.get()
         # assert some columns still there, and the default columns NOT in response:
         assert "name" in data.columns
@@ -313,7 +313,7 @@ class Test_FortigateActiveIpsecVpns:
 
         # now assert column specified to not be returned is not returned:
         data = FortigateActiveIpsecVpns(copy.deepcopy(ACTIVE_VPN_RESULT))
-        data.clean_data()
+        # data.clean_data()
         data = data.get(exclude_columns=["name", "rgwy"])
         # assert some columns still there, and the default columns NOT in response:
         assert "name" not in data.columns

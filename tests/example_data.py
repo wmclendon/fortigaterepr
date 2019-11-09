@@ -1527,3 +1527,158 @@ FW_ADDR_GROUP_V6 = [
         "tagging": [],
     }
 ]
+
+FW_IPPOOL_V4 = [
+    {
+        "q_origin_key": "Test IPv4 Pool",
+        "name": "Test IPv4 Pool",
+        "type": "overload",
+        "startip": "172.16.100.100",
+        "endip": "172.16.100.100",
+        "source-startip": "0.0.0.0",
+        "source-endip": "0.0.0.0",
+        "block-size": 128,
+        "num-blocks-per-user": 8,
+        "pba-timeout": 30,
+        "permit-any-host": "disable",
+        "arp-reply": "enable",
+        "arp-intf": "",
+        "associated-interface": "",
+        "comments": "Example IPv4 Pool",
+    },
+    {
+        "q_origin_key": "Test PBA IP Pool",
+        "name": "Test PBA IP Pool",
+        "type": "port-block-allocation",
+        "startip": "172.16.100.200",
+        "endip": "172.16.100.250",
+        "source-startip": "0.0.0.0",
+        "source-endip": "0.0.0.0",
+        "block-size": 128,
+        "num-blocks-per-user": 8,
+        "pba-timeout": 30,
+        "permit-any-host": "disable",
+        "arp-reply": "enable",
+        "arp-intf": "",
+        "associated-interface": "",
+        "comments": "Example Port Block Allocation Rule",
+    },
+]
+
+FW_IPPOOL_V6 = [
+    {
+        "q_origin_key": "Test IPv6 Pool",
+        "name": "Test IPv6 Pool",
+        "startip": "2001:db8::100",
+        "endip": "2001:db8::100",
+        "comments": "Example IPv6 Pool",
+    }
+]
+
+FW_VIP_V4 = [
+    {
+        "q_origin_key": "Test IPv4 VIP",
+        "name": "Test IPv4 VIP",
+        "id": 0,
+        "uuid": "4156e0f2-02ec-51ea-f2be-64d77046b5a6",
+        "comment": "Example IPv4 VIP",
+        "type": "static-nat",
+        "dns-mapping-ttl": 0,
+        "ldb-method": "static",
+        "src-filter": [],
+        "service": [],
+        "extip": "172.16.100.75",
+        "extaddr": [],
+        "mappedip": [{"q_origin_key": "192.168.100.75", "range": "192.168.100.75"}],
+        "mapped-addr": "",
+        "extintf": "any",
+        "arp-reply": "enable",
+        "server-type": "",
+        "persistence": "none",
+        "nat-source-vip": "disable",
+        "portforward": "disable",
+        "protocol": "tcp",
+        "extport": "0-65535",
+        "mappedport": "0-65535",
+        "gratuitous-arp-interval": 0,
+        "srcintf-filter": [],
+        "portmapping-type": "1-to-1",
+        "realservers": [],
+        "http-cookie-domain-from-host": "disable",
+        "http-cookie-domain": "",
+        "http-cookie-path": "",
+        "http-cookie-generation": 0,
+        "http-cookie-age": 60,
+        "http-cookie-share": "same-ip",
+        "http-multiplex": "disable",
+        "http-ip-header": "disable",
+        "http-ip-header-name": "",
+        "outlook-web-access": "disable",
+        "weblogic-server": "disable",
+        "websphere-server": "disable",
+        "monitor": [],
+        "max-embryonic-connections": 1000,
+        "color": 0,
+    }
+]
+
+FW_VIP_V6 = [
+    {
+        "q_origin_key": "Test IPv6 VIP",
+        "name": "Test IPv6 VIP",
+        "id": 0,
+        "uuid": "527b4e04-02ec-51ea-c7a4-eae7445e9bb7",
+        "comment": "Example IPv6 VIP",
+        "type": "static-nat",
+        "src-filter": [],
+        "extip": "2001:db8:aaaa::100",
+        "mappedip": "2001:db8:bbbb::100",
+        "arp-reply": "enable",
+        "portforward": "disable",
+        "protocol": "tcp",
+        "extport": "0-65535",
+        "mappedport": "0-65535",
+        "color": 0,
+        "ldb-method": "static",
+        "server-type": "",
+        "persistence": "none",
+        "realservers": [],
+        "http-cookie-domain-from-host": "disable",
+        "http-cookie-domain": "",
+        "http-cookie-path": "",
+        "http-cookie-generation": 0,
+        "http-cookie-age": 60,
+        "http-cookie-share": "same-ip",
+        "http-multiplex": "disable",
+        "http-ip-header": "disable",
+        "http-ip-header-name": "",
+        "outlook-web-access": "disable",
+        "weblogic-server": "disable",
+        "websphere-server": "disable",
+        "monitor": [],
+        "max-embryonic-connections": 1000,
+    }
+]
+
+FW_VIP_GROUP_V4 = [
+    {
+        "q_origin_key": "Test IPv4 VIP Group",
+        "name": "Test IPv4 VIP Group",
+        "uuid": "5e9a3f88-02ec-51ea-8fdd-0f22bd883f9c",
+        "interface": "any",
+        "color": 0,
+        "comments": "Example IPv4 VIP Group",
+        "member": [{"q_origin_key": "Test IPv4 VIP", "name": "Test IPv4 VIP"}],
+    }
+]
+
+FW_VIP_GROUP_V6 = [
+    {
+        "q_origin_key": "Test IPv6 VIP Group",
+        "name": "Test IPv6 VIP Group",
+        "uuid": "68ce7c30-02ec-51ea-27df-a22155099d03",
+        "color": 0,
+        "comments": "Example IPv6 VIP Group",
+        "member": [{"q_origin_key": "Test IPv6 VIP", "name": "Test IPv6 VIP"}],
+    }
+]

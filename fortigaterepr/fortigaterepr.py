@@ -28,6 +28,9 @@ from fortigaterepr.devicedata import (
     FortigateServiceGroups,
     FortigateAddressObjects,
     FortigateAddressGroups,
+    FortigateIpPool,
+    FortigateVips,
+    FortigateVipGroups,
 )
 
 RO_PROFILE_COMMANDS = """
@@ -158,6 +161,12 @@ class FortigateDevice:
         self.fw_v6_address_objects = None
         self.fw_address_groups = None
         self.fw_v6_address_groups = None
+        self.fw_ip_pool = None
+        self.fw_v6_ip_pool = None
+        self.fw_vips = None
+        self.fw_v6_vips = None
+        self.fw_vip_groups = None
+        self.fw_v6_vip_groups = None
 
     def rest_monitor_check_resp(self, resp) -> bool:
         """
@@ -560,7 +569,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateInterfaceDetails(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.interfaces = data
         return self.interfaces
 
@@ -579,7 +588,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateFirewallPolicy(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.fw_policy_ipv4 = data
         return self.fw_policy_ipv4
 
@@ -598,7 +607,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateFirewallPolicy(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.fw_policy_ipv6 = data
         return self.fw_policy_ipv6
 
@@ -617,7 +626,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateManagedAps(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.managed_aps = data
         return self.managed_aps
 
@@ -636,7 +645,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateWlanConnectedClients(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.wlan_connected_clients = data
         return self.wlan_connected_clients
 
@@ -655,7 +664,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateWlanRogueAps(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.wlan_rogue_aps = data
         return self.wlan_rogue_aps
 
@@ -674,7 +683,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateDhcpClientLeases(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.dhcp_client_leases = data
         return self.dhcp_client_leases
 
@@ -693,7 +702,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateServices(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.fw_services = data
         return self.fw_services
 
@@ -712,7 +721,7 @@ edit {vdom}
                 )
                 return None
             data = FortigateServiceGroups(result.get("results"))
-            # data.clean_data()
+            data.clean_data()
             self.fw_service_groups = data
         return self.fw_service_groups
 
@@ -734,7 +743,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressObjects(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_address_objects = data
                 return self.fw_address_objects
         elif ip_version == 6:
@@ -746,7 +755,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressObjects(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_v6_address_objects = data
                 return self.fw_v6_address_objects
 
@@ -768,7 +777,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressGroups(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_address_groups = data
                 return self.fw_address_groups
         elif ip_version == 6:
@@ -780,10 +789,9 @@ edit {vdom}
                     )
                     return None
                 data = FortigateAddressGroups(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_v6_address_groups = data
                 return self.fw_v6_address_groups
-<<<<<<< HEAD
 
     def get_fw_ip_pool(self, vdom=None, ip_version: int = 4) -> pd.DataFrame:
         """
@@ -803,7 +811,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateIpPool(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_ip_pool = data
                 return self.fw_ip_pool
         elif ip_version == 6:
@@ -815,7 +823,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateIpPool(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_v6_ip_pool = data
                 return self.fw_v6_ip_pool
 
@@ -837,7 +845,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateVips(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_vips = data
                 return self.fw_vips
         elif ip_version == 6:
@@ -849,7 +857,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateVips(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_v6_vips = data
                 return self.fw_v6_vips
 
@@ -871,7 +879,7 @@ edit {vdom}
                     )
                     return None
                 data = FortigateVipGroups(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_vip_groups = data
                 return self.fw_vip_groups
         elif ip_version == 6:
@@ -883,8 +891,6 @@ edit {vdom}
                     )
                     return None
                 data = FortigateVipGroups(result.get("results"))
-                # data.clean_data()
+                data.clean_data()
                 self.fw_v6_vip_groups = data
                 return self.fw_v6_vip_groups
-=======
->>>>>>> parent of 9f4d2bb... added vips, vip groups with tests

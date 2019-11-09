@@ -36,17 +36,16 @@ def clean_columns_helper(
 
     Returns cleaned up dataframe
     """
-    new_df = df
     if len(clean_columns) == 0:
         # empty list of clean_columns, return df dataframe unchanged
-        return new_df
+        return df
 
     for c in clean_columns:
         try:
-            new_df[c[0]].fillna(c[1], inplace=True)
+            df[c[0]].fillna(c[1], inplace=True)
         except KeyError:
             logging.info(f"Column {c[0]} not found in data, skipping.")
-    return new_df
+    return df
 
 
 class FortigateVipGroups(pd.DataFrame):
@@ -65,24 +64,17 @@ class FortigateVipGroups(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        for idx, item in clean_df.iterrows():
+        self = clean_columns_helper(self, clean_columns)
+        for idx, item in self.iterrows():
             if isinstance(item.get("member"), list):
                 members = ", ".join(member.get("name") for member in item.get("member"))
-                clean_df.at[idx, "member"] = members
-        self.cleaned = True
-        return clean_df
+                self.at[idx, "member"] = members
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateVips(pd.DataFrame):
@@ -121,26 +113,19 @@ class FortigateVips(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        for idx, item in clean_df.iterrows():
+        self = clean_columns_helper(self, clean_columns)
+        for idx, item in self.iterrows():
             if isinstance(item.get("mappedip"), list):
                 ip_addr = ipaddress.ip_interface(
                     item.get("mappedip")[0].get("q_origin_key")
                 )
-                clean_df.at[idx, "mappedip"] = ip_addr
-        self.cleaned = True
-        return clean_df
+                self.at[idx, "mappedip"] = ip_addr
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateIpPool(pd.DataFrame):
@@ -159,20 +144,13 @@ class FortigateIpPool(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateAddressGroups(pd.DataFrame):
@@ -191,24 +169,17 @@ class FortigateAddressGroups(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        for idx, item in clean_df.iterrows():
+        self = clean_columns_helper(self, clean_columns)
+        for idx, item in self.iterrows():
             if isinstance(item.get("member"), list):
                 members = ", ".join(member.get("name") for member in item.get("member"))
-                clean_df.at[idx, "member"] = members
-        self.cleaned = True
-        return clean_df
+                self.at[idx, "member"] = members
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateAddressObjects(pd.DataFrame):
@@ -240,20 +211,13 @@ class FortigateAddressObjects(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateServiceGroups(pd.DataFrame):
@@ -272,24 +236,17 @@ class FortigateServiceGroups(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        for idx, item in clean_df.iterrows():
+        self = clean_columns_helper(self, clean_columns)
+        for idx, item in self.iterrows():
             if isinstance(item.get("member"), list):
                 members = ", ".join(member.get("name") for member in item.get("member"))
-                clean_df.at[idx, "member"] = members
-        self.cleaned = True
-        return clean_df
+                self.at[idx, "member"] = members
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateServices(pd.DataFrame):
@@ -320,17 +277,14 @@ class FortigateServices(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
+        self = clean_columns_helper(self, clean_columns)
         # below enables sorting by column...not sure how to expose this.  leaving commented out for now
         # self.sort_values(by=['category'], inplace=True)
 
         # need to add column 'protocol-name' or something based on protocol-number, for friendlier output
         # create protocol-name column and re-order to be right after protocol-number
         # self['protocol-name'] = 'Not Specified'
-        clean_df.insert(9, "protocol-name", "Not Specified")
+        self.insert(9, "protocol-name", "Not Specified")
         protocol_names = {
             1: "icmp",
             6: "tcp",
@@ -341,22 +295,18 @@ class FortigateServices(pd.DataFrame):
             51: "ah",
             58: "icmp6",
         }
-        for idx, item in clean_df.iterrows():
+        for idx, item in self.iterrows():
             if isinstance(item.get("protocol-number"), int):
                 protocol_number = item.get("protocol-number")
-                clean_df.at[idx, "protocol-name"] = protocol_names.get(
+                self.at[idx, "protocol-name"] = protocol_names.get(
                     protocol_number, "Not specified"
                 )
-        self.cleaned = True
-        return clean_df
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateManagedAps(pd.DataFrame):
@@ -390,20 +340,13 @@ class FortigateManagedAps(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateWlanConnectedClients(pd.DataFrame):
@@ -432,20 +375,13 @@ class FortigateWlanConnectedClients(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateWlanRogueAps(pd.DataFrame):
@@ -482,20 +418,13 @@ class FortigateWlanRogueAps(pd.DataFrame):
             ("ssid", "None / Unknown"),
         ]
 
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateArpTable(pd.DataFrame):
@@ -514,20 +443,13 @@ class FortigateArpTable(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateInterfaceDetails(pd.DataFrame):
@@ -606,40 +528,33 @@ class FortigateInterfaceDetails(pd.DataFrame):
             ("ipv6_addresses", "None"),
         ]
 
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
         # for now going to convert the IP representation to CIDR notation.
         # also presumes no multi-netting at this time...
-        for idx, item in clean_df.iterrows():
+        for idx, item in self.iterrows():
             if isinstance(item.get("ipv4_addresses"), list):
                 ip_addr = str(
                     ipaddress.ip_interface(
                         f"{item['ipv4_addresses'][0]['ip']}/{item['ipv4_addresses'][0]['netmask']}"
                     )
                 )
-                clean_df.at[idx, "ipv4_addresses"] = ip_addr
+                self.at[idx, "ipv4_addresses"] = ip_addr
             if isinstance(item.get("ipv6_addresses"), list):
                 ip6_addr = str(
                     ipaddress.ip_interface(
                         f"{item['ipv6_addresses'][0]['ip']}/{item['ipv6_addresses'][0]['cidr_netmask']}"
                     )
                 )
-                clean_df.at[idx, "ipv6_addresses"] = ip6_addr
+                self.at[idx, "ipv6_addresses"] = ip6_addr
             if isinstance(item.get("vlan_id"), float):
-                clean_df.at[idx, "vlan_id"] = int(item.get("vlan_id"))
-        self.cleaned = True
-        return clean_df
+                self.at[idx, "vlan_id"] = int(item.get("vlan_id"))
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class ForitgateDetectedDevices(pd.DataFrame):
@@ -670,20 +585,13 @@ class ForitgateDetectedDevices(pd.DataFrame):
             ("os_version", "Unknown"),
             ("ipv6_address", "Unknown"),
         ]
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
-        self.cleaned = True
-        return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateActiveIpsecVpns(pd.DataFrame):
@@ -699,21 +607,13 @@ class FortigateActiveIpsecVpns(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-        self.cleaned = True
-        return clean_df
-
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateRouteTable(pd.DataFrame):
@@ -734,26 +634,19 @@ class FortigateRouteTable(pd.DataFrame):
             ("tunnel_parent", "N/A"),
             ("is_tunnel_route", "N/A"),
         ]
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
         # this column, if present, requires special processing, so outside the for loop above
-        if "install_date" in clean_df:
-            clean_df["install_date"] = pd.to_datetime(
-                clean_df["install_date"], errors="coerce", unit="s"
+        if "install_date" in self:
+            self["install_date"] = pd.to_datetime(
+                self["install_date"], errors="coerce", unit="s"
             )
-        self.cleaned = True
-        return clean_df
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateFirewallPolicy(pd.DataFrame):
@@ -782,47 +675,46 @@ class FortigateFirewallPolicy(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = []
-        clean_df = clean_columns_helper(self, clean_columns)
-        already_cleaned = getattr(self, "cleaned", False)
-        if already_cleaned is True:
-            return clean_df
-        for idx, rule in clean_df.iterrows():
+        self = clean_columns_helper(self, clean_columns)
+        for idx, rule in self.iterrows():
             new_values = rule["srcintf"]
             for i, item in enumerate(new_values):
-                new_values[i] = item.get("name")
-            clean_df.at[idx, "srcintf"] = new_values
+                if isinstance(item, dict):
+                    new_values[i] = item.get("name")
+            self.at[idx, "srcintf"] = new_values
 
             new_values = rule["srcaddr"]
             for i, item in enumerate(new_values):
-                new_values[i] = item.get("name")
-            clean_df.at[idx, "srcaddr"] = new_values
+                if isinstance(item, dict):
+                    new_values[i] = item.get("name")
+            self.at[idx, "srcaddr"] = new_values
 
             new_values = rule["dstintf"]
             for i, item in enumerate(new_values):
-                new_values[i] = item.get("name")
-            clean_df.at[idx, "dstintf"] = new_values
+                if isinstance(item, dict):
+                    new_values[i] = item.get("name")
+            self.at[idx, "dstintf"] = new_values
 
             new_values = rule["dstaddr"]
             for i, item in enumerate(new_values):
-                new_values[i] = item.get("name")
-            clean_df.at[idx, "dstaddr"] = new_values
+                if isinstance(item, dict):
+                    new_values[i] = item.get("name")
+            self.at[idx, "dstaddr"] = new_values
 
             new_values = rule["service"]
             for i, item in enumerate(new_values):
-                new_values[i] = item.get("name")
-            clean_df.at[idx, "service"] = new_values
-        self.cleaned = True
-        return clean_df
+                if isinstance(item, dict):
+                    new_values[i] = item.get("name")
+            self.at[idx, "service"] = new_values
 
     def get_simple_output(self):
         """
         helper method to return simple table with small number of columns
         """
-        df = self.clean_data()
-        cols = [c for c in self.simple_view_columns if c in df.columns]
-        return df[cols]
+        cols = [c for c in self.simple_view_columns if c in self.columns]
+        return self[cols]
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method
         """
@@ -831,10 +723,7 @@ class FortigateFirewallPolicy(pd.DataFrame):
         if exclude_columns is None:
             return self.get_simple_output()
 
-        if clean_data:
-            df = self.clean_data()
-
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)
 
 
 class FortigateDhcpClientLeases(pd.DataFrame):
@@ -853,22 +742,15 @@ class FortigateDhcpClientLeases(pd.DataFrame):
         method to clean / normalize data, if necessary
         """
         clean_columns = [("vci", "N/A"), ("hostname", "None / Unknown")]
-        already_cleaned = getattr(self, "cleaned", False)
-        clean_df = clean_columns_helper(self, clean_columns)
-        if already_cleaned is True:
-            return clean_df
+        self = clean_columns_helper(self, clean_columns)
 
-        if "expire_time" in clean_df:
-            clean_df["expire_time"] = pd.to_datetime(
-                clean_df["expire_time"], errors="coerce", unit="s"
+        if "expire_time" in self:
+            self["expire_time"] = pd.to_datetime(
+                self["expire_time"], errors="coerce", unit="s"
             )
-        self.cleaned = True
-        return clean_df
 
-    def get(self, exclude_columns=base_drop_columns, clean_data=True):
+    def get(self, exclude_columns=base_drop_columns):
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
-        if clean_data:
-            df = self.clean_data()
-        return get_helper(df, exclude_columns)
+        return get_helper(self, exclude_columns)

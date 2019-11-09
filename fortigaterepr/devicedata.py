@@ -48,9 +48,69 @@ def clean_columns_helper(
     return df
 
 
+class FortigateServices(pd.DataFrame):
+    """
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
+    domain specific tooling.
+
+    initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
+    as list of data rather than raw text response.
+    """
+
+    base_drop_columns = [
+        "q_origin_key",
+        "proxy",
+        "helper",
+        "iprange",
+        "tcp-halfclose-timer",
+        "tcp-halfopen-timer",
+        "udp-idle-timer",
+        "session-ttl",
+        "check-reset-range",
+        "color",
+        "visibility",
+    ]
+
+    def clean_data(self):
+        """
+        method to clean / normalize data, if necessary
+        """
+        clean_columns = []
+        self = clean_columns_helper(self, clean_columns)
+        # below enables sorting by column...not sure how to expose this.  leaving commented out for now
+        # self.sort_values(by=['category'], inplace=True)
+
+        # need to add column 'protocol-name' or something based on protocol-number, for friendlier output
+        # create protocol-name column and re-order to be right after protocol-number
+        # self['protocol-name'] = 'Not Specified'
+        self.insert(9, "protocol-name", "Not Specified")
+        protocol_names = {
+            1: "icmp",
+            6: "tcp",
+            17: "udp",
+            89: "ospf",
+            47: "gre",
+            50: "esp",
+            51: "ah",
+            58: "icmp6",
+        }
+        for idx, item in self.iterrows():
+            if isinstance(item.get("protocol-number"), int):
+                protocol_number = item.get("protocol-number")
+                self.at[idx, "protocol-name"] = protocol_names.get(
+                    protocol_number, "Not specified"
+                )
+
+    def get(self, exclude_columns=base_drop_columns):
+        """
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        """
+        return get_helper(self, exclude_columns)
+
+
 class FortigateManagedAps(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
 
     initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
@@ -83,14 +143,14 @@ class FortigateManagedAps(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateWlanConnectedClients(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
 
     initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
@@ -118,14 +178,14 @@ class FortigateWlanConnectedClients(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateWlanRogueAps(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
 
     initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
@@ -161,14 +221,14 @@ class FortigateWlanRogueAps(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateArpTable(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
 
     initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
@@ -186,14 +246,14 @@ class FortigateArpTable(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateInterfaceDetails(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
     """
 
@@ -291,14 +351,14 @@ class FortigateInterfaceDetails(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class ForitgateDetectedDevices(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
     """
 
@@ -328,14 +388,14 @@ class ForitgateDetectedDevices(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateActiveIpsecVpns(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
     """
 
@@ -350,14 +410,14 @@ class FortigateActiveIpsecVpns(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateRouteTable(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
     """
 
@@ -388,14 +448,14 @@ class FortigateRouteTable(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)
 
 
 class FortigateFirewallPolicy(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
     """
 
@@ -467,7 +527,7 @@ class FortigateFirewallPolicy(pd.DataFrame):
 
 class FortigateDhcpClientLeases(pd.DataFrame):
     """
-    subclass of Pandas DataFrame that has powerful maniuplation capabilities natively and can be passed on to user, with a handful of helper methods and
+    subclass of Pandas DataFrame that has powerful manipulation capabilities natively and can be passed on to user, with a handful of helper methods and
     domain specific tooling.
 
     initiliazation will require additional cleanup due to how we have to gather the data at this time, with CLI command that is returned
@@ -490,6 +550,6 @@ class FortigateDhcpClientLeases(pd.DataFrame):
 
     def get(self, exclude_columns=base_drop_columns):
         """
-        returns copy Route Table itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
+        returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
         return get_helper(self, exclude_columns)

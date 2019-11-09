@@ -24,6 +24,7 @@ from fortigaterepr.devicedata import (
     FortigateRouteTable,
     FortigateWlanConnectedClients,
     FortigateWlanRogueAps,
+    FortigateServices,
 )
 
 RO_PROFILE_COMMANDS = """
@@ -148,6 +149,7 @@ class FortigateDevice:
         self.wlan_connected_clients = None
         self.wlan_rogue_aps = None
         self.dhcp_client_leases = None
+        self.fw_services = None
 
     def rest_monitor_check_resp(self, resp) -> bool:
         """
@@ -649,7 +651,7 @@ edit {vdom}
             self.wlan_rogue_aps = data
         return self.wlan_rogue_aps
 
-    def get_dhcp_client_leases(self, vdom=None) -> Optional[pd.DataFrame]:
+    def get_dhcp_client_leases(self, vdom=None) -> pd.DataFrame:
         """
         get Firewall's managed AP Details
         """
@@ -667,3 +669,22 @@ edit {vdom}
             data.clean_data()
             self.dhcp_client_leases = data
         return self.dhcp_client_leases
+
+    def get_fw_services(self, vdom=None) -> pd.DataFrame:
+        """
+        get Firewall's Service Definitions
+        """
+        if vdom is None:
+            vdom = self.vdom
+        self.rest_check_session()
+        if self.fw_services is None:
+            result = self.devapi.get("firewall.service", "custom", vdom=vdom)
+            if not self.rest_monitor_check_resp(result):
+                FORTIGATEREPR_LOGGER.error(
+                    "Response encountered error, returning None."
+                )
+                return None
+            data = FortigateServices(result.get("results"))
+            data.clean_data()
+            self.fw_services = data
+        return self.fw_services

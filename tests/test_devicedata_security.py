@@ -11,9 +11,13 @@ import pandas as pd
 import pytest
 import requests
 
-from fortigaterepr.devicedata import FortigateActiveIpsecVpns, FortigateFirewallPolicy
+from fortigaterepr.devicedata import (
+    FortigateActiveIpsecVpns,
+    FortigateFirewallPolicy,
+    FortigateServices,
+)
 
-from .example_data import ACTIVE_VPN_RESULT, FW_POLICY_RESULT
+from .example_data import ACTIVE_VPN_RESULT, FW_POLICY_RESULT, FW_SERVICES
 
 
 class Test_TEMPLATE:
@@ -25,6 +29,36 @@ class Test_TEMPLATE:
 
     def test_get_method(self):
         pass
+
+
+class Test_FortigateServices:
+    """Class for testing FortigateServices functionality
+    """
+
+    def test_basic_data(self):
+        data = FortigateServices(FW_SERVICES)
+        assert isinstance(data, pd.DataFrame)
+        # assert expected values are present before any cleanup:
+        for col in FortigateServices.base_drop_columns:
+            assert col in data.columns
+
+    def test_clean_data(self):
+        protocol_names = ["icmp", "tcp", "gre", "esp", "ah", "icmp6"]
+        data = FortigateServices(copy.deepcopy(FW_SERVICES))
+        data.clean_data()
+        assert isinstance(data, pd.DataFrame)
+        assert "protocol-name" in data.columns
+        for protocol in protocol_names:
+            assert data["protocol-name"].str.contains(protocol).any()
+
+    def test_get_method(self):
+        data = FortigateServices(copy.deepcopy(FW_SERVICES))
+        data.clean_data()
+        data = data.get()
+        assert isinstance(data, pd.DataFrame)
+        # assert dropped columns are NOT present in the returned data:
+        for col in FortigateServices.base_drop_columns:
+            assert col not in data.columns
 
 
 class Test_FortigateFirewallPolicy:

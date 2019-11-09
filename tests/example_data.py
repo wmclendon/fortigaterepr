@@ -1403,3 +1403,127 @@ FW_SERVICE_GROUPS = [
         "color": 0,
     },
 ]
+
+FW_OBJECTS_V4 = [
+    {
+        "q_origin_key": "FIREWALL_AUTH_PORTAL_ADDRESS",
+        "name": "FIREWALL_AUTH_PORTAL_ADDRESS",
+        "uuid": "c730f888-06e1-51e8-5d68-fef4330c4e17",
+        "subnet": "0.0.0.0 0.0.0.0",
+        "type": "ipmask",
+        "start-ip": "0.0.0.0",
+        "end-ip": "0.0.0.0",
+        "fqdn": "",
+        "country": "",
+        "wildcard-fqdn": "",
+        "cache-ttl": 0,
+        "wildcard": "0.0.0.0 0.0.0.0",
+        "sdn": "",
+        "tenant": "",
+        "organization": "",
+        "epg-name": "",
+        "subnet-name": "",
+        "sdn-tag": "",
+        "policy-group": "",
+        "comment": "",
+        "visibility": "disable",
+        "associated-interface": "",
+        "color": 0,
+        "filter": "",
+        "obj-id": "",
+        "list": [],
+        "tagging": [],
+        "allow-routing": "disable",
+    },
+    {
+        "q_origin_key": "IPAD-AIR-PERSONAL",
+        "name": "IPAD-AIR-PERSONAL",
+        "uuid": "7c28a4a8-0404-51e6-37a5-0340498fc825",
+        "subnet": "192.168.1.155 255.255.255.255",
+        "type": "ipmask",
+        "start-ip": "192.168.1.155",
+        "end-ip": "255.255.255.255",
+        "fqdn": "",
+        "country": "",
+        "wildcard-fqdn": "",
+        "cache-ttl": 0,
+        "wildcard": "192.168.1.155 255.255.255.255",
+        "sdn": "",
+        "tenant": "",
+        "organization": "",
+        "epg-name": "",
+        "subnet-name": "",
+        "sdn-tag": "",
+        "policy-group": "",
+        "comment": "",
+        "visibility": "enable",
+        "associated-interface": "",
+        "color": 0,
+        "filter": "",
+        "obj-id": "",
+        "list": [],
+        "tagging": [],
+        "allow-routing": "disable",
+    },
+]
+
+FW_OBJECTS_V6 = [
+    {
+        "q_origin_key": "Test IPv6 Object",
+        "name": "Test IPv6 Object",
+        "uuid": "2e552d86-028f-51ea-47ef-b14566005799",
+        "type": "ipprefix",
+        "sdn": "",
+        "ip6": "2001:db8::/48",
+        "start-ip": "2001:db8::",
+        "end-ip": "::",
+        "fqdn": "",
+        "cache-ttl": 0,
+        "visibility": "enable",
+        "color": 0,
+        "obj-id": "",
+        "list": [],
+        "tagging": [],
+        "comment": "Example IPv6 object",
+        "template": "",
+        "subnet-segment": [],
+        "host-type": "any",
+        "host": "2001:db8::",
+    }
+]
+
+FW_ADDR_GROUP_V4 = [
+    {
+        "q_origin_key": "IPv4 Address Group",
+        "name": "IPv4 Address Group",
+        "uuid": "ec05195c-0291-51ea-b5c6-7241eac752f8",
+        "member": [
+            {"q_origin_key": "IPAD-AIR-PERSONAL", "name": "IPAD-AIR-PERSONAL"},
+            {"q_origin_key": "Work-MB-Pro", "name": "Work-MB-Pro"},
+        ],
+        "comment": "Example address group",
+        "visibility": "enable",
+        "color": 0,
+        "tagging": [],
+        "allow-routing": "disable",
+    }
+]
+
+FW_ADDR_GROUP_V6 = [
+    {
+        "q_origin_key": "Example IPv6 Group",
+        "name": "Example IPv6 Group",
+        "uuid": "fbf15fc4-0291-51ea-28c4-490693107556",
+        "visibility": "enable",
+        "color": 0,
+        "comment": "Example IPv6 address group",
+        "member": [
+            {
+                "q_origin_key": "SSLVPN_TUNNEL_IPv6_ADDR1",
+                "name": "SSLVPN_TUNNEL_IPv6_ADDR1",
+            },
+            {"q_origin_key": "Test IPv6 Object", "name": "Test IPv6 Object"},
+        ],
+        "tagging": [],
+    }
+]

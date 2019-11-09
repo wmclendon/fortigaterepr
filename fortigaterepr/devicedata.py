@@ -70,7 +70,7 @@ class FortigateVipGroups(pd.DataFrame):
                 members = ", ".join(member.get("name") for member in item.get("member"))
                 self.at[idx, "member"] = members
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -121,7 +121,7 @@ class FortigateVips(pd.DataFrame):
                 )
                 self.at[idx, "mappedip"] = ip_addr
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -146,7 +146,7 @@ class FortigateIpPool(pd.DataFrame):
         clean_columns = []
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -175,7 +175,7 @@ class FortigateAddressGroups(pd.DataFrame):
                 members = ", ".join(member.get("name") for member in item.get("member"))
                 self.at[idx, "member"] = members
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -213,7 +213,7 @@ class FortigateAddressObjects(pd.DataFrame):
         clean_columns = []
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -242,7 +242,7 @@ class FortigateServiceGroups(pd.DataFrame):
                 members = ", ".join(member.get("name") for member in item.get("member"))
                 self.at[idx, "member"] = members
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -302,7 +302,7 @@ class FortigateServices(pd.DataFrame):
                     protocol_number, "Not specified"
                 )
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -342,7 +342,7 @@ class FortigateManagedAps(pd.DataFrame):
         clean_columns = []
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -377,7 +377,7 @@ class FortigateWlanConnectedClients(pd.DataFrame):
         clean_columns = []
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -420,7 +420,7 @@ class FortigateWlanRogueAps(pd.DataFrame):
 
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -445,7 +445,7 @@ class FortigateArpTable(pd.DataFrame):
         clean_columns = []
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -550,7 +550,7 @@ class FortigateInterfaceDetails(pd.DataFrame):
             if isinstance(item.get("vlan_id"), float):
                 self.at[idx, "vlan_id"] = int(item.get("vlan_id"))
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -587,7 +587,7 @@ class ForitgateDetectedDevices(pd.DataFrame):
         ]
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -609,7 +609,7 @@ class FortigateActiveIpsecVpns(pd.DataFrame):
         clean_columns = []
         self = clean_columns_helper(self, clean_columns)
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -642,7 +642,7 @@ class FortigateRouteTable(pd.DataFrame):
                 self["install_date"], errors="coerce", unit="s"
             )
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
@@ -714,7 +714,7 @@ class FortigateFirewallPolicy(pd.DataFrame):
         cols = [c for c in self.simple_view_columns if c in self.columns]
         return self[cols]
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of itself, with optionally removed columns.  effectively a wrapper for the DataFrame drop method
         """
@@ -749,7 +749,7 @@ class FortigateDhcpClientLeases(pd.DataFrame):
                 self["expire_time"], errors="coerce", unit="s"
             )
 
-    def get(self, exclude_columns=base_drop_columns):
+    def get(self, exclude_columns: list = base_drop_columns) -> pd.DataFrame:
         """
         returns copy of DataFrame itself, with optionally removed columns.  effectively a wrapper for the DataFrae drop method
         """
